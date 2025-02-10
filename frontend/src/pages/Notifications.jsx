@@ -9,53 +9,44 @@ function Notifications() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' })
-        .then((registration) => {
-          console.log('Client: Service Worker registered:', registration);
-        })
-        .catch((error) => console.error('Client: Service Worker registration error:', error));
+      navigator.serviceWorker.register('/sw.js')
+        .then(registerServiceWorker)
+        .catch((error) => console.error('Service Worker Error', error));
     }
     getSubscription();
   }, []);
 
+  const registerServiceWorker = async (registration) => {
+    console.log('Service Worker registered:', registration);
+  };
+
   const askPermission = async () => {
     const permissionResult = await Notification.requestPermission();
     if (permissionResult !== 'granted') {
-      alert('Notification permission was denied');
+      alert('Permission denied');
     } else {
       subscribeUser();
     }
   };
 
   const subscribeUser = async () => {
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const response = await axios.get(`${API_URL}/api/notifications/publicKey`);
-      const publicVapidKey = response.data.publicKey;
-      console.log('Client: Public VAPID Key:', publicVapidKey);
-      const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
+    const registration = await navigator.serviceWorker.ready;
+    const response = await axios.get(`${API_URL}/api/notifications/publicKey`);
+    const publicVapidKey = response.data.publicKey;
+    const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
 
-      const newSubscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedVapidKey,
-      });
-      console.log('Client: New subscription:', newSubscription);
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedVapidKey,
+    });
 
-      await axios.post(`${API_URL}/api/notifications/subscribe`, newSubscription);
-      setSubscription(newSubscription);
-    } catch (error) {
-      console.error('Client: Error during subscription:', error);
-    }
+    await axios.post(`${API_URL}/api/notifications/subscribe`, subscription);
+    setSubscription(subscription);
   };
 
   const getSubscription = async () => {
     const registration = await navigator.serviceWorker.ready;
     const existingSubscription = await registration.pushManager.getSubscription();
-    if (existingSubscription) {
-      console.log('Client: Existing subscription found:', existingSubscription);
-    } else {
-      console.log('Client: No existing subscription found');
-    }
     setSubscription(existingSubscription);
   };
 
