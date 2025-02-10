@@ -9,16 +9,14 @@ function Notifications() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registerServiceWorker)
+      navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+        })
         .catch((error) => console.error('Service Worker Error', error));
     }
     getSubscription();
   }, []);
-
-  const registerServiceWorker = async (registration) => {
-    console.log('Service Worker registered:', registration);
-  };
 
   const askPermission = async () => {
     const permissionResult = await Notification.requestPermission();
@@ -30,23 +28,34 @@ function Notifications() {
   };
 
   const subscribeUser = async () => {
-    const registration = await navigator.serviceWorker.ready;
-    const response = await axios.get(`${API_URL}/api/notifications/publicKey`);
-    const publicVapidKey = response.data.publicKey;
-    const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const response = await axios.get(`${API_URL}/api/notifications/publicKey`);
+      const publicVapidKey = response.data.publicKey;
+      console.log('Public VAPID Key:', publicVapidKey);
+      const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
 
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: convertedVapidKey,
-    });
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey,
+      });
+      console.log('User subscribed:', subscription);
 
-    await axios.post(`${API_URL}/api/notifications/subscribe`, subscription);
-    setSubscription(subscription);
+      await axios.post(`${API_URL}/api/notifications/subscribe`, subscription);
+      setSubscription(subscription);
+    } catch (error) {
+      console.error('Subscription error:', error);
+    }
   };
 
   const getSubscription = async () => {
     const registration = await navigator.serviceWorker.ready;
     const existingSubscription = await registration.pushManager.getSubscription();
+    if (existingSubscription) {
+      console.log('Existing subscription found:', existingSubscription);
+    } else {
+      console.log('No existing subscription found');
+    }
     setSubscription(existingSubscription);
   };
 
