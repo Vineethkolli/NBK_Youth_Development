@@ -35,6 +35,25 @@ function AppContent() {
     trackPageView(location.pathname + location.search);
   }, [location]);
 
+  useEffect(() => {
+    initializeAnalytics();
+    registerServiceWorker();
+  }, []);
+
+  const registerServiceWorker = () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered:', registration);
+        })
+        .catch((error) => {
+          console.error('SW registration failed:', error);
+        });
+    }
+  };
+
+  
   return (
     <>
       <Toaster position="top-right" />
