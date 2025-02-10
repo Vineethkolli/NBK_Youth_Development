@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import webpush from 'web-push';
-
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import paymentRoutes from './routes/payment.js';
@@ -44,8 +43,9 @@ webpush.setVapidDetails(
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
+  origin: process.env.FRONTEND_URL, 
+  credentials: true,
+  methods: ['GET', 'POST']
 }));
 app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
