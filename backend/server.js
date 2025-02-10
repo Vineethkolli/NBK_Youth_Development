@@ -43,7 +43,7 @@ webpush.setVapidDetails(
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL, 
+  origin: process.env.FRONTEND_URL,
   credentials: true,
   methods: ['GET', 'POST']
 }));
@@ -51,7 +51,10 @@ app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 
 // Serve static files
+// Serve assets from /assets
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+// Serve all files from the public folder at the root so that sw.js, logo.png, and manifest.json are accessible
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/api/auth', authRoutes);
