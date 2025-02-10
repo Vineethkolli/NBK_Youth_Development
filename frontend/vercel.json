@@ -12,16 +12,12 @@
   "routes": [
     {
       "src": "/manifest.json",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      },
+      "headers": { "Cache-Control": "public, max-age=0, must-revalidate" },
       "dest": "/manifest.json"
     },
     {
       "src": "/sw.js",
-      "headers": {
-        "Cache-Control": "no-cache, no-store, must-revalidate"
-      },
+      "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" },
       "dest": "/sw.js"
     },
     {

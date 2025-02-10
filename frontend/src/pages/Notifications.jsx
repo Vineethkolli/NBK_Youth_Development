@@ -11,9 +11,9 @@ function Notifications() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .then((registration) => {
-          console.log('Service Worker registered:', registration);
+          console.log('Client: Service Worker registered:', registration);
         })
-        .catch((error) => console.error('Service Worker Error', error));
+        .catch((error) => console.error('Client: Service Worker registration error:', error));
     }
     getSubscription();
   }, []);
@@ -21,7 +21,7 @@ function Notifications() {
   const askPermission = async () => {
     const permissionResult = await Notification.requestPermission();
     if (permissionResult !== 'granted') {
-      alert('Permission denied');
+      alert('Notification permission was denied');
     } else {
       subscribeUser();
     }
@@ -32,19 +32,19 @@ function Notifications() {
       const registration = await navigator.serviceWorker.ready;
       const response = await axios.get(`${API_URL}/api/notifications/publicKey`);
       const publicVapidKey = response.data.publicKey;
-      console.log('Public VAPID Key:', publicVapidKey);
+      console.log('Client: Public VAPID Key:', publicVapidKey);
       const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
 
-      const subscription = await registration.pushManager.subscribe({
+      const newSubscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: convertedVapidKey,
       });
-      console.log('User subscribed:', subscription);
+      console.log('Client: New subscription:', newSubscription);
 
-      await axios.post(`${API_URL}/api/notifications/subscribe`, subscription);
-      setSubscription(subscription);
+      await axios.post(`${API_URL}/api/notifications/subscribe`, newSubscription);
+      setSubscription(newSubscription);
     } catch (error) {
-      console.error('Subscription error:', error);
+      console.error('Client: Error during subscription:', error);
     }
   };
 
@@ -52,9 +52,9 @@ function Notifications() {
     const registration = await navigator.serviceWorker.ready;
     const existingSubscription = await registration.pushManager.getSubscription();
     if (existingSubscription) {
-      console.log('Existing subscription found:', existingSubscription);
+      console.log('Client: Existing subscription found:', existingSubscription);
     } else {
-      console.log('No existing subscription found');
+      console.log('Client: No existing subscription found');
     }
     setSubscription(existingSubscription);
   };
