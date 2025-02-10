@@ -1,29 +1,33 @@
-// sw.js
-self.addEventListener('install', (event) => {
-  event.waitUntil(self.skipWaiting()); // Activate new SW immediately
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim()); // Take control of all clients
-});
-
 self.addEventListener('push', (event) => {
-  try {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: '/logo.png', // Use absolute path
-      badge: '/logo.png',
-    };
-    event.waitUntil(self.registration.showNotification(data.title, options));
-  } catch (error) {
-    console.error('Push notification error:', error);
-  }
+  const data = event.data.json();
+
+  const options = {
+    body: data.body,
+    icon: './logo.png',    // You can add an icon in the public folder
+    badge: './logo.png',   // Add a badge icon if needed
+    vibrate: [200, 100, 200], // Optional: Add vibration pattern
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: '2'
+    },
+    actions: [
+      {action: 'explore', title: 'Go to the site',
+        icon: './checkmark.png'},
+      {action: 'close', title: 'Close the notification',
+        icon: './xmark.png'},
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow('https:nbkyouth.vercel.app') // Replace with your URL
-  );
+  if (event.action === 'close') {
+      // Handle 'close' action if needed
+  } else {
+      clients.openWindow('/');
+  }
 });
