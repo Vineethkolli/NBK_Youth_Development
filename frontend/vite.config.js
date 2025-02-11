@@ -6,15 +6,19 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'public',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
-        short_name: 'NBK Youth',
+        short_name: 'NBKYouth',
         description: 'NBK Youth Gangavaram',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
+        scope: '/',
         icons: [
           {
             src: '/logo.png',
@@ -26,26 +30,38 @@ export default defineConfig({
             src: '/logo.png',
             sizes: '512x512',
             type: 'image/png',
+            purpose: 'any maskable',
           },
         ],
       },
       workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.origin === 'https://nbkyouth.vercel.app',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
-            },
+            }
           },
           {
-            urlPattern: ({ url }) => url.origin === location.origin,
-            handler: 'StaleWhileRevalidate',
+            urlPattern: ({ request }) => 
+              request.destination === 'audio' || 
+              request.destination === 'image',
+            handler: 'CacheFirst',
             options: {
-              cacheName: 'assets-cache',
+              cacheName: 'media-cache',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+              },
             },
           },
         ],
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module',
       },
     }),
   ],
