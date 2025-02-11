@@ -6,7 +6,6 @@ import { Bell, BellOff } from 'lucide-react';
 
 function Notifications() {
   const [subscription, setSubscription] = useState(null);
-  const [notificationHistory, setNotificationHistory] = useState([]);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -154,28 +153,6 @@ function Notifications() {
             {isLoading ? 'Sending...' : 'Send Notification'}
           </button>
         </form>
-      </div>
-
-      {/* Notification History */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Notification History</h2>
-        <div className="space-y-4">
-          {notificationHistory.map((notification, index) => (
-            <div
-              key={index}
-              className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-            >
-              <h3 className="font-medium text-lg">{notification.title}</h3>
-              <p className="text-gray-600 mt-1">{notification.body}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Sent at: {new Date(notification.createdAt).toLocaleString()}
-              </p>
-            </div>
-          ))}
-          {notificationHistory.length === 0 && (
-            <p className="text-center text-gray-500">No notifications sent yet</p>
-          )}
-        </div>
       </div>
     </div>
   );

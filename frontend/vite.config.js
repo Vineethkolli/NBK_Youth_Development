@@ -7,10 +7,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // Use 'strategy', not 'strategies'
-      strategy: 'injectManifest',
-      srcDir: 'src',
-      filename: 'custom-sw.js',
+      strategies: 'injectManifest',    // Use injectManifest mode
+      srcDir: 'src',                   // Your custom service worker location
+      filename: 'sw.js',               // The name of your custom service worker
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
@@ -34,7 +33,24 @@ export default defineConfig({
           },
         ],
       },
-      // Remove 'workbox' options when using 'injectManifest' strategy
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.origin === 'https://nbkyouth.vercel.app',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.origin === location.origin,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'assets-cache',
+            },
+          },
+        ],
+      },
     }),
   ],
 });
