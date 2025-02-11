@@ -8,7 +8,7 @@ export default defineConfig({
     VitePWA({
       strategies: 'injectManifest',
       // Tell the plugin where your custom SW lives:
-      srcDir: 'public',
+      srcDir: 'src',
       filename: 'sw.js', // This will be output to your build directory (e.g., dist/sw.js)
       registerType: 'autoUpdate',
       manifest: {
