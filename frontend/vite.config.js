@@ -9,31 +9,47 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'public',
       filename: 'sw.js',
+      registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
-        short_name: 'NBKYouth',
-        start_url: '/',
-        display: 'standalone',
-        background_color: '#ffffff',
+        short_name: 'NBK Youth',
+        description: 'NBK Youth Gangavaram',
         theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
         icons: [
           {
             src: '/logo.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable',
           },
           {
             src: '/logo.png',
             sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
+            type: 'image/png',
+          },
+        ],
       },
       workbox: {
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: true
-      }
-    })
-  ]
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.origin === 'https://nbkyouth.vercel.app',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.origin === location.origin,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'assets-cache',
+            },
+          },
+        ],
+      },
+    }),
+  ],
 });
