@@ -1,7 +1,12 @@
-// public/sw.js
+// src/custom-sw.js
 import { precacheAndRoute } from 'workbox-precaching';
+import { clientsClaim } from 'workbox-core';
 
-// This line is required so that vite-plugin-pwa (and Workbox) can inject the manifest.
+// Claim clients immediately after activation
+self.skipWaiting();
+clientsClaim();
+
+// Precache assets
 precacheAndRoute(self.__WB_MANIFEST);
 
 self.addEventListener('push', (event) => {
@@ -16,7 +21,9 @@ self.addEventListener('push', (event) => {
       actions: [{ action: 'open', title: 'Open' }],
       requireInteraction: true,
     };
-    event.waitUntil(self.registration.showNotification(data.title, options));
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    );
   } catch (error) {
     console.error('Push notification error:', error);
   }
@@ -27,14 +34,10 @@ self.addEventListener('notificationclick', (event) => {
   const urlToOpen = event.notification.data?.url || '/';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then(clientList => {
+      .then((clientList) => {
         for (const client of clientList) {
-          if ('focus' in client) {
-            client.focus();
-            if (client.navigate) {
-              return client.navigate(urlToOpen);
-            }
-            return;
+          if (client.url === urlToOpen && 'focus' in client) {
+            return client.focus();
           }
         }
         if (clients.openWindow) {
@@ -42,12 +45,4 @@ self.addEventListener('notificationclick', (event) => {
         }
       })
   );
-});
-
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
 });
