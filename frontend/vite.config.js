@@ -5,11 +5,10 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
-    react(),
     VitePWA({
-      strategies: 'injectManifest',    // Use injectManifest mode
-      srcDir: 'public',                   // Your custom service worker location
-      filename: 'sw.js',               // The name of your custom service worker
+      strategies: 'injectManifest',
+      srcDir: 'src',        // Folder where your custom service worker lives
+      filename: 'sw.js',             // The name of your custom service worker
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
