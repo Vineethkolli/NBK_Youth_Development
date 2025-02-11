@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
+    react(),
     VitePWA({
       strategies: 'injectManifest',
       // Tell the plugin where your custom SW lives:
