@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       strategies: 'injectManifest',    // Use injectManifest mode
-      srcDir: 'src',                   // Your custom service worker location
+      srcDir: 'public',                   // Your custom service worker location
       filename: 'sw.js',               // The name of your custom service worker
       registerType: 'autoUpdate',
       manifest: {
