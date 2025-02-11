@@ -7,8 +7,8 @@ export default defineConfig({
   plugins: [
     VitePWA({
       strategies: 'injectManifest',
-      srcDir: 'src',        // Folder where your custom service worker lives
-      filename: 'sw.js',             // The name of your custom service worker
+      srcDir: 'src/sw',      // New location for your custom service worker
+      filename: 'sw.js',     // Name remains the same
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
