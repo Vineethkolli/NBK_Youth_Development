@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -7,8 +6,9 @@ export default defineConfig({
   plugins: [
     VitePWA({
       strategies: 'injectManifest',
-      srcDir: 'src/sw',      // New location for your custom service worker
-      filename: 'sw.js',     // Name remains the same
+      // Tell the plugin where your custom SW lives:
+      srcDir: 'src/sw',
+      filename: 'sw.js', // This will be output to your build directory (e.g., dist/sw.js)
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
