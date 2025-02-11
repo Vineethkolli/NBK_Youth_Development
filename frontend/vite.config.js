@@ -6,47 +6,34 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      strategies: 'injectManifest',
+      srcDir: 'public',
+      filename: 'sw.js',
       manifest: {
         name: 'NBK Youth',
-        short_name: 'NBK Youth',
-        description: 'NBK Youth Gangavaram',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
-        display: 'standalone',
+        short_name: 'NBKYouth',
         start_url: '/',
+        display: 'standalone',
+        background_color: '#ffffff',
+        theme_color: '#ffffff',
         icons: [
           {
             src: '/logo.png',
             sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable',
+            type: 'image/png'
           },
           {
             src: '/logo.png',
             sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
+            type: 'image/png'
+          }
+        ]
       },
       workbox: {
-        runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.origin === 'https://nbkyouth.vercel.app',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-            },
-          },
-          {
-            urlPattern: ({ url }) => url.origin === location.origin,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'assets-cache',
-            },
-          },
-        ],
-      },
-    }),
-  ],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true
+      }
+    })
+  ]
 });

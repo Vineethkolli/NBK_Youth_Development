@@ -1,39 +1,30 @@
-// Service Worker for Push Notifications
 self.addEventListener('push', (event) => {
-  if (!event.data) return;
+  const data = event.data.json();
+  
+  const options = {
+    body: data.body,
+    icon: '/logo.png',
+    badge: '/logo.png',
+    data: {
+      url: '/notifications' // URL to open when notification is clicked
+    },
+    actions: [
+      {
+        action: 'open',
+        title: 'Open'
+      }
+    ]
+  };
 
-  try {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: '/logo.png',
-      badge: '/logo.png',
-      vibrate: [200, 100, 200],
-      data: {
-        url: '/notifications'
-      },
-      actions: [
-        {
-          action: 'open',
-          title: 'Open'
-        }
-      ],
-      requireInteraction: true
-    };
-
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
-  } catch (error) {
-    console.error('Push notification error:', error);
-  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const urlToOpen = event.notification.data?.url || '/';
-
+  // Open the app and navigate to notifications page
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
       .then((clientList) => {
@@ -42,24 +33,15 @@ self.addEventListener('notificationclick', (event) => {
           if ('focus' in client) {
             client.focus();
             if (client.navigate) {
-              return client.navigate(urlToOpen);
+              return client.navigate('/notifications');
             }
             return;
           }
         }
         // If no window client is available, open a new one
         if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
+          return clients.openWindow('/notifications');
         }
       })
   );
-});
-
-// Handle service worker updates
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
 });
