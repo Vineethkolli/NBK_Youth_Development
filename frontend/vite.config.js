@@ -6,9 +6,13 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // Use your custom service worker instead of the generated one
       strategies: 'injectManifest',
       srcDir: 'public',
       filename: 'sw.js',
+      injectManifest: {
+        swSrc: 'public/sw.js',
+      },
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
@@ -29,24 +33,6 @@ export default defineConfig({
             src: '/logo.png',
             sizes: '512x512',
             type: 'image/png',
-          },
-        ],
-      },
-      workbox: {
-        runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.origin === 'https://nbkyouth.vercel.app',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-            },
-          },
-          {
-            urlPattern: ({ url }) => url.origin === location.origin,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'assets-cache',
-            },
           },
         ],
       },
