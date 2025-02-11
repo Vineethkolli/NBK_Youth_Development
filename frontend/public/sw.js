@@ -1,20 +1,18 @@
 self.addEventListener('push', (event) => {
   const data = event.data.json();
-
+  
   const options = {
     body: data.body,
-    icon: './logo.png',    // You can add an icon in the public folder
-    badge: './logo.png',   // Add a badge icon if needed
-    vibrate: [200, 100, 200], // Optional: Add vibration pattern
+    icon: '/logo.png',
+    badge: '/logo.png',
     data: {
-      dateOfArrival: Date.now(),
-      primaryKey: '2'
+      url: '/notifications' // URL to open when notification is clicked
     },
     actions: [
-      {action: 'explore', title: 'Go to the site',
-        icon: './checkmark.png'},
-      {action: 'close', title: 'Close the notification',
-        icon: './xmark.png'},
+      {
+        action: 'open',
+        title: 'Open'
+      }
     ]
   };
 
@@ -25,9 +23,25 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  if (event.action === 'close') {
-      // Handle 'close' action if needed
-  } else {
-      clients.openWindow('/');
-  }
+
+  // Open the app and navigate to notifications page
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // If a window client is available, navigate to the notifications page
+        for (const client of clientList) {
+          if ('focus' in client) {
+            client.focus();
+            if (client.navigate) {
+              return client.navigate('/notifications');
+            }
+            return;
+          }
+        }
+        // If no window client is available, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow('/notifications');
+        }
+      })
+  );
 });
