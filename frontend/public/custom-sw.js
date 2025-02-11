@@ -1,12 +1,12 @@
 // src/custom-sw.js
 import { precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
+import { skipWaiting } from 'workbox-core';
 
-// Claim clients immediately after activation
-self.skipWaiting();
+skipWaiting();
 clientsClaim();
 
-// Precache assets
+// Precache assets injected by VitePWA
 precacheAndRoute(self.__WB_MANIFEST);
 
 self.addEventListener('push', (event) => {
@@ -21,9 +21,7 @@ self.addEventListener('push', (event) => {
       actions: [{ action: 'open', title: 'Open' }],
       requireInteraction: true,
     };
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
+    event.waitUntil(self.registration.showNotification(data.title, options));
   } catch (error) {
     console.error('Push notification error:', error);
   }
@@ -31,18 +29,17 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const urlToOpen = event.notification.data?.url || '/';
+  const urlToOpen = new URL(event.notification.data?.url || '/', self.location.origin).href;
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientList) => {
-        for (const client of clientList) {
-          if (client.url === urlToOpen && 'focus' in client) {
-            return client.focus();
-          }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
         }
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
-        }
-      })
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
   );
 });

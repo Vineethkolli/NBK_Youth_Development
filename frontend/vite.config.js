@@ -7,9 +7,10 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      strategies: 'injectManifest',
+      // Use 'strategy', not 'strategies'
+      strategy: 'injectManifest',
       srcDir: 'src',
-      filename: 'sw.js',
+      filename: 'custom-sw.js',
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
@@ -33,7 +34,7 @@ export default defineConfig({
           },
         ],
       },
-      // Remove the workbox configuration as it's unnecessary with injectManifest
+      // Remove 'workbox' options when using 'injectManifest' strategy
     }),
   ],
 });
