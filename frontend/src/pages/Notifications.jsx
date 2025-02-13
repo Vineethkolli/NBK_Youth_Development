@@ -1,36 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { API_URL } from '../utils/config';
 import { urlBase64ToUint8Array } from '../utils/vapidKeys';
-import { Bell, BellOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Bell } from 'lucide-react';
+import NotificationForm from '../components/notifications/NotificationForm';
 
 function Notifications() {
+  const { user } = useAuth();
   const [subscription, setSubscription] = useState(null);
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then(registerServiceWorker)
-        .catch((error) => console.error('Service Worker Error', error));
+        .catch((error) => console.error('Service Worker Error:', error));
     }
     getSubscription();
-    fetchNotificationHistory();
   }, []);
 
   const registerServiceWorker = async (registration) => {
     console.log('Service Worker registered:', registration);
-  };
-
-  const fetchNotificationHistory = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/notifications/history`);
-      setNotificationHistory(response.data);
-    } catch (error) {
-      console.error('Error fetching notification history:', error);
-    }
   };
 
   const askPermission = async () => {
@@ -42,12 +33,17 @@ function Notifications() {
       await subscribeUser();
     } catch (error) {
       console.error('Permission error:', error);
-      alert('Failed to enable notifications: ' + error.message);
+      toast.error('Failed to enable notifications: ' + error.message);
     }
   };
 
   const subscribeUser = async () => {
     try {
+      if (!user?.registerId) {
+        toast.error('User is not logged in or registerId is missing');
+        return;
+      }
+
       const registration = await navigator.serviceWorker.ready;
       const response = await axios.get(`${API_URL}/api/notifications/publicKey`);
       const publicVapidKey = response.data.publicKey;
@@ -58,11 +54,16 @@ function Notifications() {
         applicationServerKey: convertedVapidKey,
       });
 
-      await axios.post(`${API_URL}/api/notifications/subscribe`, subscription);
+      await axios.post(`${API_URL}/api/notifications/subscribe`, {
+        registerId: user.registerId,
+        subscription,
+      });
+
       setSubscription(subscription);
+      toast.success('Notifications enabled successfully');
     } catch (error) {
       console.error('Subscription error:', error);
-      throw error;
+      toast.error('Failed to subscribe for notifications');
     }
   };
 
@@ -72,88 +73,28 @@ function Notifications() {
     setSubscription(existingSubscription);
   };
 
-  const sendNotification = async (e) => {
-    e.preventDefault();
-    if (!title || !body) {
-      alert('Please enter both title and message');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      await axios.post(`${API_URL}/api/notifications/notify`, { title, body });
-      setTitle('');
-      setBody('');
-      fetchNotificationHistory();
-    } catch (error) {
-      console.error('Error sending notification:', error);
-      alert('Failed to send notification');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      {/* Notification Permission Section */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold flex items-center">
-            <Bell className="mr-2" />
-            Notification Settings
+            <Bell className="mr-2" /> Notification Settings
           </h2>
           {!subscription ? (
             <button
               onClick={askPermission}
               className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
             >
-              <Bell className="mr-2 h-5 w-5" />
-              Enable Notifications
+              <Bell className="mr-2 h-5 w-5" /> Enable Notifications
             </button>
           ) : (
             <div className="flex items-center text-green-600">
-              <Bell className="mr-2 h-5 w-5" />
-              Notifications Enabled
+              <Bell className="mr-2 h-5 w-5" /> Notifications Enabled
             </div>
           )}
         </div>
       </div>
-
-      {/* Send Notification Form */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Send Notification</h2>
-        <form onSubmit={sendNotification} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Message</label>
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {isLoading ? 'Sending...' : 'Send Notification'}
-          </button>
-        </form>
-      </div>
+      <NotificationForm />
     </div>
   );
 }

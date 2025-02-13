@@ -1,17 +1,20 @@
 import mongoose from 'mongoose';
 
-const SubscriptionSchema = new mongoose.Schema({
-  endpoint: {
+const notificationSchema = new mongoose.Schema({
+  registerId: {
     type: String,
     required: true,
-    unique: true,
+    unique: false, // Multiple devices for the same user
   },
-  keys: {
-    p256dh: { type: String, required: true },
-    auth: { type: String, required: true },
-  },
+  subscriptions: [
+    {
+      endpoint: { type: String, required: true },
+      keys: {
+        auth: { type: String, required: true },
+        p256dh: { type: String, required: true }
+      }
+    }
+  ]
 }, { timestamps: true });
 
-const Subscription = mongoose.model('Subscription', SubscriptionSchema);
-
-export default Subscription;
+export default mongoose.model('Notification', notificationSchema);
