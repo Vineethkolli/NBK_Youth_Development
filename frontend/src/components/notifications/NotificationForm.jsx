@@ -7,11 +7,8 @@ function NotificationForm() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [target, setTarget] = useState('All');
-  const [registerId, setRegisterId] = useState('');
-  const [includeLink, setIncludeLink] = useState(false);
-  const [linkUrl, setLinkUrl] = useState('');
-  const [linkText, setLinkText] = useState('Open Link');
+  const [target, setTarget] = useState('All'); // Default: Send to all users
+  const [registerId, setRegisterId] = useState(''); // Only for "Specific User"
 
   const sendNotification = async (e) => {
     e.preventDefault();
@@ -19,28 +16,15 @@ function NotificationForm() {
       toast.error('Please enter both title and message');
       return;
     }
-    if (includeLink && !linkUrl) {
-      toast.error('Please enter a URL or uncheck "Add Link".');
-      return;
-    }
-
+  
     setIsLoading(true);
     try {
-      let messageBody = body;
-
-      // Embed the link in the message body
-      if (includeLink) {
-        const linkDisplayText = linkText || 'Open Link';
-        // Using markdown syntax for hyperlinks
-        messageBody += `\n\n[${linkDisplayText}](${linkUrl})`;
-      }
-
       const requestData = {
         title,
-        body: messageBody,
+        body,
         target,
       };
-
+  
       if (target === 'Specific User') {
         if (!registerId) {
           toast.error('Please enter Register ID for the specific user');
@@ -49,16 +33,12 @@ function NotificationForm() {
         }
         requestData.registerId = registerId;
       }
-
+  
       await axios.post(`${API_URL}/api/notifications/notify`, requestData);
-
-      // Reset form fields
+  
       setTitle('');
       setBody('');
       setRegisterId('');
-      setIncludeLink(false);
-      setLinkUrl('');
-      setLinkText('Open Link');
       toast.success(`Notification sent successfully to ${target}`);
     } catch (error) {
       console.error('Error sending notification:', error);
@@ -66,7 +46,7 @@ function NotificationForm() {
     } finally {
       setIsLoading(false);
     }
-  };
+  };  
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
@@ -97,46 +77,8 @@ function NotificationForm() {
           />
         </div>
 
-        {/* Add Link Checkbox */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            checked={includeLink}
-            onChange={(e) => setIncludeLink(e.target.checked)}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label className="ml-2 block text-sm text-gray-700">Add Link</label>
-        </div>
-
-        {/* URL Input Fields */}
-        {includeLink && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">URL Link</label>
-              <input
-                type="url"
-                placeholder="https://example.com"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Link Text (Optional)</label>
-              <input
-                type="text"
-                placeholder="Open Link"
-                value={linkText}
-                onChange={(e) => setLinkText(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              />
-            </div>
-          </>
-        )}
-
-        {/* Target Audience Dropdown */}
-        <div>
+          {/* Target Audience Dropdown */}
+          <div>
           <label className="block text-sm font-medium text-gray-700">Send to</label>
           <select
             value={target}
@@ -150,13 +92,13 @@ function NotificationForm() {
           </select>
         </div>
 
-        {/* Register ID Input */}
+        {/* Input for Register ID (Only if 'Specific User' is selected) */}
         {target === 'Specific User' && (
           <div>
             <label className="block text-sm font-medium text-gray-700">Register ID</label>
             <input
               type="text"
-              placeholder="Ex: R1"
+              placeholder='Ex: R1'
               value={registerId}
               onChange={(e) => setRegisterId(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
