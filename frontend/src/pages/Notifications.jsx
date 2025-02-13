@@ -13,7 +13,7 @@ function Notifications() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('/notifysw.js')
         .then(registerServiceWorker)
         .catch((error) => console.error('Service Worker Error:', error));
     }
