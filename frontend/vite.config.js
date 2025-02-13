@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      strategies: 'injectManifest', 
+      strategies: 'injectManifest', // Use injectManifest instead of generateSW
       srcDir: 'src',
       filename: 'sw.js',
       registerType: 'autoUpdate',
