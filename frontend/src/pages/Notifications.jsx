@@ -74,7 +74,7 @@ function Notifications() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-1xl mx-auto space-y-8">
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold flex items-center">
