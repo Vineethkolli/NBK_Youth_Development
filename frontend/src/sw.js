@@ -9,7 +9,7 @@ self.addEventListener('push', (event) => {
   const options = {
     body: data.body || 'Default message',
     icon: '/logo.png',
-    badge: '/notificationicon.png',
+    badge: '/notificationlogo.png',
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
