@@ -11,16 +11,17 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "src": "/sw.js",
+      "dest": "/sw.js"
     },
     {
       "src": "/manifest.json",
       "dest": "/manifest.json"
     },
     {
-      "src": "/sw.js",
-      "dest": "/sw.js"
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "status": 200
     }
   ]
 }
