@@ -21,10 +21,6 @@
     {
       "src": "/sw.js",
       "dest": "/sw.js"
-    },
-    {
-      "src": "/notifysw.js",
-      "dest": "/notifysw.js"
     }
   ]
 }

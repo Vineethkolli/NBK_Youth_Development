@@ -1,24 +1,19 @@
-import { precacheAndRoute } from 'workbox-precaching';
+// src/sw.js
+precacheAndRoute(self.__WB_MANIFEST || []);
 
-// This line tells Workbox where to inject the manifest.
-precacheAndRoute(self.__WB_MANIFEST);
-
-// Your push notification listener
+// Your custom notification logic:
 self.addEventListener('push', (event) => {
-  const data = event.data.json();
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || 'Default Title';
   const options = {
-    body: data.body,
-    icon: './logo.png',
-    badge: './logo.png',
+    body: data.body || 'Default message',
+    icon: '/logo.png',
+    badge: '/logo.png',
   };
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow('/notifications')
-  );
+  event.waitUntil(clients.openWindow('/notifications'));
 });

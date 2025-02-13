@@ -6,10 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // Use your custom service worker (notifysw.js) instead of auto-generating sw.js
-      strategies: 'injectManifest',
-      srcDir: 'public',        // Directory where your custom SW file is located
-      filename: 'notifysw.js', // Name of your custom service worker file
+      strategies: 'injectManifest', 
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
