@@ -6,10 +6,6 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      strategies: 'injectManifest',
-      // Tell the plugin where your custom SW lives:
-      srcDir: 'src',
-      filename: 'sw.js', // This will be output to your build directory (e.g., dist/sw.js)
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
