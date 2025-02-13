@@ -6,11 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      strategies: 'injectManifest',
-      injectManifest: {
-        swSrc: 'src/sw.js',  // your custom service worker file
-        swDest: 'sw.js'      // output file at the build root
-      },
+      strategies: 'injectManifest', 
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
       manifest: {
         name: 'NBK Youth',
