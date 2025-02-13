@@ -1,5 +1,5 @@
-self.__WB_MANIFEST;
-// Your push notification listener
+/* self.__WB_MANIFEST */
+
 self.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
