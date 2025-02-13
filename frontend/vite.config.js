@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       strategies: 'injectManifest',
       injectManifest: {
-        swSrc: 'src/sw.js', // your custom service worker file
-        swDest: 'sw.js'     // output file name at the build root
+        swSrc: 'src/sw.js',  // your custom service worker file
+        swDest: 'sw.js'      // output file at the build root
       },
       registerType: 'autoUpdate',
       manifest: {

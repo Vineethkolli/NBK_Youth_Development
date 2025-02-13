@@ -1,7 +1,7 @@
 // src/sw.js
 precacheAndRoute(self.__WB_MANIFEST || []);
 
-// Your custom notification logic:
+// Custom push notification logic:
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'Default Title';
