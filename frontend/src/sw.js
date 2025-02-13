@@ -1,7 +1,8 @@
-// src/sw.js
+import { precacheAndRoute } from 'workbox-precaching';
+
 precacheAndRoute(self.__WB_MANIFEST || []);
 
-// Custom push notification logic:
+// Your custom notification logic:
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'Default Title';
