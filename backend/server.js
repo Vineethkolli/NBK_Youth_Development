@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import webpush from 'web-push';
+
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import paymentRoutes from './routes/payment.js';
@@ -19,7 +20,7 @@ import hiddenProfileRoutes from './routes/hiddenProfiles.js';
 import homepageRoutes from './routes/homepage.js';
 import momentsRoutes from './routes/moments.js';
 import gameRoutes from './routes/games.js';
-import notificationRoutes from './routes/notifications.js';
+import notificationRoutes from './routes/notification.js';
 import { createDefaultDeveloper } from './utils/setupDefaults.js';
 
 // Load environment variables
