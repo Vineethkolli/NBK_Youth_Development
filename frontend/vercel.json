@@ -12,7 +12,13 @@
   "routes": [
     {
       "src": "/sw.js",
+      "headers": { "Content-Type": "application/javascript" },
       "dest": "/sw.js"
+    },
+    {
+      "src": "/registerSW.js",
+      "headers": { "Content-Type": "application/javascript" },
+      "dest": "/registerSW.js"
     },
     {
       "src": "/manifest.json",
