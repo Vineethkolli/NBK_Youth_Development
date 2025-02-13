@@ -8,7 +8,7 @@ export default defineConfig({
     VitePWA({
       strategies: 'injectManifest',
       injectManifest: {
-        swSrc: 'src/sw.js', // explicitly define the custom service worker source
+        swSrc: 'src/sw.js'  // point to your custom service worker file
       },
       registerType: 'autoUpdate',
       manifest: {
