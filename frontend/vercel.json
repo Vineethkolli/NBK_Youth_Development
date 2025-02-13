@@ -12,6 +12,7 @@
   "routes": [
     {
       "src": "/sw.js",
+      "headers": { "cache-control": "no-cache" },
       "dest": "/sw.js"
     },
     {
