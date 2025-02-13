@@ -35,6 +35,7 @@ export const subscribe = async (req, res) => {
     }
   };
   
+  
 
 // Unsubscribe Route
 export const unsubscribe = async (req, res) => {
