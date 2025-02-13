@@ -6,6 +6,7 @@ import { urlBase64ToUint8Array } from '../utils/vapidKeys';
 import { useAuth } from '../context/AuthContext';
 import { Bell } from 'lucide-react';
 import NotificationForm from '../components/notifications/NotificationForm';
+import NotificationHistory from '../components/notifications/NotificationHistory';
 
 function Notifications() {
   const { user } = useAuth();
@@ -13,7 +14,8 @@ function Notifications() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker
+        .register('/sw.js')
         .then(registerServiceWorker)
         .catch((error) => console.error('Service Worker Error:', error));
     }
@@ -95,6 +97,8 @@ function Notifications() {
         </div>
       </div>
       <NotificationForm />
+      {/* New: Notification History Component */}
+      <NotificationHistory />
     </div>
   );
 }

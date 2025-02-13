@@ -1,9 +1,11 @@
 import express from 'express';
+import { auth } from '../middleware/auth.js';
 import {
   getPublicKey,
   subscribe,
   unsubscribe,
-  sendNotification
+  sendNotification,
+  getNotificationHistory,
 } from '../controllers/notificationController.js';
 
 const router = express.Router();
@@ -11,6 +13,7 @@ const router = express.Router();
 router.get('/publicKey', getPublicKey);
 router.post('/subscribe', subscribe);
 router.post('/unsubscribe', unsubscribe);
-router.post('/notify', sendNotification);
+router.post('/notify', auth, sendNotification); // Add auth middleware here
+router.get('/history', auth, getNotificationHistory); // Add auth middleware here
 
 export default router;
