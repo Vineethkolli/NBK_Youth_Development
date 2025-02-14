@@ -41,8 +41,16 @@ export const subscribe = async (req, res) => {
 export const unsubscribe = async (req, res) => {
   const { endpoint } = req.body;
 
+  if (!endpoint) {
+    return res.status(400).json({ error: 'Endpoint is required' });
+  }
+
   try {
-    await Subscription.deleteOne({ endpoint });
+    // Use $pull to remove only the matching subscription from the subscriptions array
+    await Subscription.updateOne(
+      { "subscriptions.endpoint": endpoint },
+      { $pull: { subscriptions: { endpoint } } }
+    );
     console.log('Unsubscribed:', endpoint);
     res.status(200).json({ message: 'Unsubscribed successfully' });
   } catch (error) {
@@ -87,6 +95,7 @@ export const sendNotification = async (req, res) => {
         try {
           await webpush.sendNotification(sub, payload);
         } catch (error) {
+          // If subscription is expired or invalid, remove it from the user's subscriptions
           if (error.statusCode === 410 || error.statusCode === 404) {
             user.subscriptions = user.subscriptions.filter((s) => s.endpoint !== sub.endpoint);
             await user.save();
@@ -105,7 +114,7 @@ export const sendNotification = async (req, res) => {
       title,
       body,
       recipients: eligibleRegisterIds,
-      sentBy: senderRegisterId, // Add sender's registerId
+      sentBy: senderRegisterId,
     });
 
     res.status(200).json({ message: `Notifications sent to ${target}` });
