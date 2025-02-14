@@ -1,7 +1,7 @@
 import express from 'express';
 import { auth, checkRole } from '../middleware/auth.js';
 import User from '../models/User.js';
-import Notification from '../models/Notification.js'; // Import the Notification model
+import Notification from '../models/Notification.js'; 
 import { userController } from '../controllers/userController.js';
 
 const router = express.Router();
