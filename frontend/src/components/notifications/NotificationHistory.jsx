@@ -35,7 +35,7 @@ const NotificationHistory = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6 mt-4">
-      <h3 className="text-lg font-semibold mb-4">Notification History</h3>
+      <h2 className="text-lg font-semibold mb-4">Notification History</h2>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (

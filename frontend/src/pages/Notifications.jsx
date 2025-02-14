@@ -84,7 +84,7 @@ function Notifications() {
               <Bell className="mr-2" /> Notifications Permission
             </h2>
             <p className="text-sm text-gray-500">
-              Click "Allow Notifications" to receive real-time updates and events.
+              Click "Allow Notifications" to receive real-time updates.
             </p>
           </div>
           {!subscription ? (

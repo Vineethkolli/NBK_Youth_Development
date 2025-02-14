@@ -79,7 +79,7 @@ const NotificationSettings = () => {
       <div className="flex items-center justify-between">
       <div>
           <h3 className="text-lg font-medium">Notifications Permission</h3>
-          <p className="text-sm text-gray-500">Click "Allow Notifications" to receive real-time updates and events.</p>
+          <p className="text-sm text-gray-500">Click "Allow Notifications" to receive real-time updates.</p>
         </div>
         {!subscription ? (
           <button

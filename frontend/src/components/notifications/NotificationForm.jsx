@@ -1,3 +1,4 @@
+// NotificationForm.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -9,6 +10,8 @@ function NotificationForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [target, setTarget] = useState('All'); // Default: Send to all users
   const [registerId, setRegisterId] = useState(''); // Only for "Specific User"
+  const [addLink, setAddLink] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
 
   const sendNotification = async (e) => {
     e.preventDefault();
@@ -17,11 +20,19 @@ function NotificationForm() {
       return;
     }
   
+    if (addLink && !linkUrl) {
+      toast.error('Please provide a valid URL');
+      return;
+    }
+  
     setIsLoading(true);
     try {
+      // Append the link to the message if the checkbox is ticked.
+      const finalBody = addLink ? `${body}\n\nOpen Link: ${linkUrl}` : body;
+  
       const requestData = {
         title,
-        body,
+        body: finalBody,
         target,
       };
   
@@ -39,6 +50,8 @@ function NotificationForm() {
       setTitle('');
       setBody('');
       setRegisterId('');
+      setAddLink(false);
+      setLinkUrl('');
       toast.success(`Notification sent successfully to ${target}`);
     } catch (error) {
       console.error('Error sending notification:', error);
@@ -46,13 +59,12 @@ function NotificationForm() {
     } finally {
       setIsLoading(false);
     }
-  };  
-
+  };
+  
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Send Notification</h2>
       <form onSubmit={sendNotification} className="space-y-4">
-
         {/* Notification Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Title</label>
@@ -64,7 +76,7 @@ function NotificationForm() {
             required
           />
         </div>
-
+  
         {/* Notification Message */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Message</label>
@@ -76,9 +88,36 @@ function NotificationForm() {
             required
           />
         </div>
-
-          {/* Target Audience Dropdown */}
+  
+        {/* Add Link Checkbox */}
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="addLink"
+            checked={addLink}
+            onChange={(e) => setAddLink(e.target.checked)}
+            className="h-4 w-4"
+          />
+          <label htmlFor="addLink" className="text-sm text-gray-700">Add link</label>
+        </div>
+  
+        {/* URL Input, only shown if Add Link is checked */}
+        {addLink && (
           <div>
+            <label className="block text-sm font-medium text-gray-700">Link URL</label>
+            <input
+              type="url"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              placeholder="https://example.com"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              required={addLink}
+            />
+          </div>
+        )}
+  
+        {/* Target Audience Dropdown */}
+        <div>
           <label className="block text-sm font-medium text-gray-700">Send to</label>
           <select
             value={target}
@@ -91,14 +130,14 @@ function NotificationForm() {
             <option value="Specific User">Specific User</option>
           </select>
         </div>
-
+  
         {/* Input for Register ID (Only if 'Specific User' is selected) */}
         {target === 'Specific User' && (
           <div>
             <label className="block text-sm font-medium text-gray-700">Register ID</label>
             <input
               type="text"
-              placeholder='Ex: R1'
+              placeholder="Ex: R1"
               value={registerId}
               onChange={(e) => setRegisterId(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -106,7 +145,7 @@ function NotificationForm() {
             />
           </div>
         )}
-
+  
         {/* Send Button */}
         <button
           type="submit"
