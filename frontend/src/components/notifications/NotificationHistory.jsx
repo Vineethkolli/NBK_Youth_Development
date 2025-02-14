@@ -34,17 +34,23 @@ const NotificationHistory = () => {
     return <div>Please log in to see your notification history.</div>;
   }
 
-  // Custom link component to style links as blue and underlined
+  // Custom link component to render links as "Open Link" buttons
   const linkDecorator = (href, text, key) => (
-    <a
-      href={href}
+    <button
       key={key}
-      style={{ color: 'blue' }}
-      target="_blank"
-      rel="noopener noreferrer"
+      onClick={() => window.open(href, '_blank')}
+      style={{
+        color: 'white',
+        backgroundColor: '#1D4ED8', // Tailwind CSS 'indigo-700' color
+        border: 'none',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        textDecoration: 'none',
+      }}
     >
-      {text}
-    </a>
+      Open Link
+    </button>
   );
 
   return (
