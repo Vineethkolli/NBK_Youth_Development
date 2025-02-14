@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Linkify from 'react-linkify';
 import { API_URL } from '../../utils/config';
 import { useAuth } from '../../context/AuthContext';
 
@@ -33,6 +34,19 @@ const NotificationHistory = () => {
     return <div>Please log in to see your notification history.</div>;
   }
 
+  // Custom link component to style links as blue and underlined
+  const linkDecorator = (href, text, key) => (
+    <a
+      href={href}
+      key={key}
+      style={{ color: 'blue' }}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {text}
+    </a>
+  );
+
   return (
     <div className="bg-white rounded-lg shadow p-6 mt-4">
       <h2 className="text-lg font-semibold mb-4">Notification History</h2>
@@ -45,12 +59,16 @@ const NotificationHistory = () => {
       ) : (
         <div className="space-y-4">
           {history.map((notif) => (
-            <div 
-              key={notif._id} 
+            <div
+              key={notif._id}
               className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
             >
               <h4 className="font-medium text-lg">{notif.title}</h4>
-              <p className="text-gray-600 mt-1">{notif.body}</p>
+              <p className="text-gray-600 mt-1">
+                <Linkify componentDecorator={linkDecorator}>
+                  {notif.body}
+                </Linkify>
+              </p>
               <div className="mt-2 text-sm text-gray-500 flex items-center justify-between">
                 <span>{new Date(notif.createdAt).toLocaleString()}</span>
                 <span className="text-indigo-600">Sent by: {notif.sentBy}</span>
@@ -61,6 +79,6 @@ const NotificationHistory = () => {
       )}
     </div>
   );
-}
+};
 
 export default NotificationHistory;
