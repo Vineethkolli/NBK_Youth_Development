@@ -3,6 +3,7 @@ import axios from 'axios';
 import Linkify from 'react-linkify';
 import { API_URL } from '../../utils/config';
 import { useAuth } from '../../context/AuthContext';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
 const NotificationHistory = () => {
   const { user } = useAuth();
@@ -34,22 +35,16 @@ const NotificationHistory = () => {
     return <div>Please log in to see your notification history.</div>;
   }
 
-  // Custom link component to render links as "Open Link" buttons
+  // Custom link component to render links as styled buttons with an icon
   const linkDecorator = (href, text, key) => (
     <button
       key={key}
       onClick={() => window.open(href, '_blank')}
-      style={{
-        color: 'white',
-        backgroundColor: '#1D4ED8', // Tailwind CSS 'indigo-700' color
-        border: 'none',
-        padding: '8px 16px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        textDecoration: 'none',
-      }}
+      className="flex items-center text-white bg-indigo-600 hover:bg-indigo-700  font-medium rounded-lg text-sm px-2 py-1 text-center mr-2 mb-2"
+      aria-label={`Open link to ${href}`}
     >
       Open Link
+      <ArrowTopRightOnSquareIcon className="ml-2 h-5 w-5" />
     </button>
   );
 
