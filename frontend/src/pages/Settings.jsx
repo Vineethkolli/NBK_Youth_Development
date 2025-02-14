@@ -1,62 +1,61 @@
-// src/pages/Settings.jsx
-import { Download, Languages, Bell } from 'lucide-react';
+import { Download, Languages } from 'lucide-react';
 import InstallApp from '../components/settings/InstallApp';
 import Footer from '../components/Footer';
+import Notifications from '../components/settings/NotificationSettings';
 import { useLanguage } from '../context/LanguageContext';
-import NotificationSettings from '../components/settings/NotificationSettings';
 
 function Settings() {
   const { language, changeLanguage } = useLanguage();
 
   return (
-    <div className="max-w-1xl mx-auto space-y-8">
+    <div className="max-w-1xl mx-auto">
       <div className="bg-white shadow-lg rounded-lg p-6 space-y-8">
         <h2 className="text-2xl font-semibold">Settings</h2>
 
         {/* Language Section */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium flex items-center">
-            <Languages className="mr-2" /> Language Preference
-          </h3>
+        <h3 className="text-lg font-medium flex items-center">
+  <Languages className="mr-2" />
+  Language Preference
+</h3>
+
           <div className="flex space-x-4">
-            <button
+            <button 
               onClick={() => changeLanguage('en')}
               className={`px-4 py-2 rounded-md ${
-                language === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                language === 'en' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700'
               }`}
             >
               English
             </button>
-            <button
+            <button 
               onClick={() => changeLanguage('te')}
               className={`px-4 py-2 rounded-md ${
-                language === 'te' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                language === 'te' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700'
               }`}
             >
               తెలుగు
             </button>
           </div>
+          {/* The translation widget container */}
           <div id="google_translate_element" className={language === 'te' ? '' : 'hidden'}></div>
         </div>
 
-
-      {/*Notification Settings Section */}
-       <div className="space-y-4">
-          <h2 className="text-lg font-medium flex items-center">
-            <Bell className="mr-2" /> Notifications
-          </h2>
-           <NotificationSettings />
-      </div>
+        {/* Notifications Section */}
+        <Notifications />
 
         {/* Install App Section */}
         <div className="space-y-4">
-          <h2 className="text-lg font-medium flex items-center">
+          <h3 className="text-lg font-medium flex items-center">
             <Download className="mr-2" /> Download App
-          </h2>
+          </h3>
           <InstallApp />
         </div>
       </div>
-
       {/* Footer */}
       <Footer />
     </div>

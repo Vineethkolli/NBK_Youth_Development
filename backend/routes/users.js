@@ -1,10 +1,14 @@
 import express from 'express';
 import { auth, checkRole } from '../middleware/auth.js';
 import User from '../models/User.js';
-import Notification from '../models/notification.js'; // Import the Notification model
+import Notification from '../models/Notification.js'; // Import the Notification model
 import { userController } from '../controllers/userController.js';
 
 const router = express.Router();
+
+// Update profile image
+router.post('/profile/image', auth, userController.updateProfileImage);
+
 
 // Get all users (developer only) with notification status
 router.get('/', auth, checkRole(['developer']), async (req, res) => {
