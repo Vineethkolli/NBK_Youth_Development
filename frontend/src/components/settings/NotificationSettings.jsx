@@ -1,14 +1,13 @@
+// src/components/notifications/NotificationSettings.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { API_URL } from '../utils/config';
-import { urlBase64ToUint8Array } from '../utils/vapidKeys';
-import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../../utils/config';
+import { urlBase64ToUint8Array } from '../../utils/vapidKeys';
+import { useAuth } from '../../context/AuthContext';
 import { Bell } from 'lucide-react';
-import NotificationForm from '../components/notifications/NotificationForm';
-import NotificationHistory from '../components/notifications/NotificationHistory';
 
-function Notifications() {
+const NotificationSettings = () => {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState(null);
 
@@ -76,36 +75,27 @@ function Notifications() {
   };
 
   return (
-    <div className="max-w-1xl mx-auto space-y-8">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-          <div>
-            <h2 className="text-xl font-semibold flex items-center mb-2">
-              <Bell className="mr-2" /> Notifications Permission
-            </h2>
-            <p className="text-sm text-gray-500">
-              Click "Allow Notifications" to receive real-time updates and events.
-            </p>
-          </div>
-          {!subscription ? (
-            <button
-              onClick={askPermission}
-              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-            >
-              <Bell className="mr-2 h-5 w-5" /> Allow Notifications
-            </button>
-          ) : (
-            <div className="flex items-center text-green-600">
-              <Bell className="mr-2 h-5 w-5" /> Notifications Allowed
-            </div>
-          )}
+    <div className="bg-white rounded-lg shadow p-6 space-y-4">
+      <div className="flex items-center justify-between">
+      <div>
+          <h3 className="text-lg font-medium">Notifications Permission</h3>
+          <p className="text-sm text-gray-500">Click "Allow Notifications" to receive real-time updates and events.</p>
         </div>
+        {!subscription ? (
+          <button
+            onClick={askPermission}
+            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            <Bell className="mr-2 h-5 w-5" /> Allow Notifications
+          </button>
+        ) : (
+          <div className="flex items-center text-green-600">
+            <Bell className="mr-2 h-5 w-5" /> Notifications Allowed
+          </div>
+        )}
       </div>
-      <NotificationForm />
-      <NotificationHistory />
     </div>
   );
-  }
-  
-  export default Notifications;
-  
+};
+
+export default NotificationSettings;
