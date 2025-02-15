@@ -27,7 +27,7 @@ import { HiddenProfileProvider } from './context/HiddenProfileContext';
 import { initializeAnalytics, trackPageView } from './utils/analytics';
 import { LanguageProvider } from './context/LanguageContext';
 import Notifications from './pages/Notifications';
-import MaintenancePage from './components/developer/MaintenancePage';
+import MaintenancePage from './components/developer/MaintenanceMode';
 import axios from 'axios';
 import { API_URL } from './utils/config';
 

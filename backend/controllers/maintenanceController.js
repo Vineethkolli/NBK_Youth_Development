@@ -12,7 +12,7 @@ export const maintenanceController = {
 
   toggleMode: async (req, res) => {
     try {
-      const { isEnabled } = req.body;
+      const { isEnabled, expectedBackAt } = req.body;
       const registerId = req.user.registerId;
 
       await MaintenanceMode.findOneAndUpdate(
@@ -20,7 +20,8 @@ export const maintenanceController = {
         { 
           isEnabled,
           enabledBy: registerId,
-          enabledAt: new Date()
+          enabledAt: new Date(),
+          expectedBackAt: expectedBackAt ? new Date(expectedBackAt) : null
         },
         { upsert: true, new: true }
       );

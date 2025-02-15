@@ -12,6 +12,10 @@ const maintenanceModeSchema = new mongoose.Schema({
   enabledAt: {
     type: Date,
     default: Date.now
+  },
+  expectedBackAt: {
+    type: Date,
+    default: null
   }
 });
 

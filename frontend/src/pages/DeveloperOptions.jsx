@@ -10,6 +10,8 @@ function DeveloperOptions() {
   const { user } = useAuth();
   const [confirmAction, setConfirmAction] = useState('');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
+  // new state for expected back date/time (in ISO format)
+  const [expectedBackAt, setExpectedBackAt] = useState('');
 
   useEffect(() => {
     fetchMaintenanceStatus();
@@ -19,6 +21,10 @@ function DeveloperOptions() {
     try {
       const { data } = await axios.get(`${API_URL}/api/maintenance/status`);
       setMaintenanceMode(data.isEnabled);
+      if (data.expectedBackAt) {
+        // set as ISO string for datetime-local input compatibility
+        setExpectedBackAt(new Date(data.expectedBackAt).toISOString().slice(0,16));
+      }
     } catch (error) {
       console.error('Failed to fetch maintenance status:', error);
     }
@@ -26,8 +32,10 @@ function DeveloperOptions() {
 
   const toggleMaintenanceMode = async () => {
     try {
+      // When enabling, send the expectedBackAt value. When disabling, clear it.
       await axios.post(`${API_URL}/api/maintenance/toggle`, {
-        isEnabled: !maintenanceMode
+        isEnabled: !maintenanceMode,
+        expectedBackAt: !maintenanceMode ? expectedBackAt : null,
       });
       setMaintenanceMode(!maintenanceMode);
       toast.success(`Maintenance mode ${!maintenanceMode ? 'enabled' : 'disabled'}`);
@@ -77,6 +85,21 @@ function DeveloperOptions() {
               }`} />
               {maintenanceMode ? 'Offline' : 'Online'}
             </div>
+            {/* Show datetime input when enabling maintenance */}
+            { !maintenanceMode && (
+              <div className="mt-4">
+                <label htmlFor="expectedBackAt" className="block text-sm font-medium text-gray-700">
+                  Expected Service Return Time:
+                </label>
+                <input
+                  id="expectedBackAt"
+                  type="datetime-local"
+                  value={expectedBackAt}
+                  onChange={(e) => setExpectedBackAt(e.target.value)}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
           </div>
           <button
             onClick={toggleMaintenanceMode}
