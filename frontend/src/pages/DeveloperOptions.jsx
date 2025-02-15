@@ -10,7 +10,7 @@ function DeveloperOptions() {
   const { user } = useAuth();
   const [confirmAction, setConfirmAction] = useState('');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
-  // new state for expected back date/time (in ISO format)
+  // state for expected back date/time (in ISO format)
   const [expectedBackAt, setExpectedBackAt] = useState('');
 
   useEffect(() => {
@@ -22,8 +22,13 @@ function DeveloperOptions() {
       const { data } = await axios.get(`${API_URL}/api/maintenance/status`);
       setMaintenanceMode(data.isEnabled);
       if (data.expectedBackAt) {
-        // set as ISO string for datetime-local input compatibility
-        setExpectedBackAt(new Date(data.expectedBackAt).toISOString().slice(0,16));
+        const date = new Date(data.expectedBackAt);
+        // Convert the UTC date to local time by subtracting the timezone offset
+        const tzOffset = date.getTimezoneOffset() * 60000;
+        const localISOTime = new Date(date.getTime() - tzOffset)
+          .toISOString()
+          .slice(0, 16);
+        setExpectedBackAt(localISOTime);
       }
     } catch (error) {
       console.error('Failed to fetch maintenance status:', error);
@@ -76,17 +81,21 @@ function DeveloperOptions() {
             <p className="text-gray-600 mb-2">
               When enabled, all users except the default developer will see the maintenance page.
             </p>
-            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
-              maintenanceMode ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-            }`}>
+            <div
+              className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                maintenanceMode ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+              }`}
+            >
               <Laptop2Icon className="h-4 w-4 mr-2" />
-              <span className={`w-2 h-2 rounded-full mr-2 ${
-                maintenanceMode ? 'bg-red-500' : 'bg-green-500'
-              }`} />
+              <span
+                className={`w-2 h-2 rounded-full mr-2 ${
+                  maintenanceMode ? 'bg-red-500' : 'bg-green-500'
+                }`}
+              />
               {maintenanceMode ? 'Offline' : 'Online'}
             </div>
-            {/* Show datetime input when enabling maintenance */}
-            { !maintenanceMode && (
+            {/* Show datetime input when maintenance is disabled */}
+            {!maintenanceMode && (
               <div className="mt-4">
                 <label htmlFor="expectedBackAt" className="block text-sm font-medium text-gray-700">
                   Expected Service Return Time:
@@ -125,7 +134,9 @@ function DeveloperOptions() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Clear Users Data</h3>
-              <p className="text-sm text-gray-500">Delete all user accounts except the developer account</p>
+              <p className="text-sm text-gray-500">
+                Delete all user accounts except the developer account
+              </p>
             </div>
             {confirmAction === 'users' ? (
               <div className="flex items-center space-x-2">
