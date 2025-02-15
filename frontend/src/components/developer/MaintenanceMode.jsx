@@ -19,9 +19,19 @@ function MaintenanceMode() {
     fetchStatus();
   }, []);
 
-  // Helper function to format the date and time as per local settings with AM/PM
+  // Convert IST time (provided without timezone) to a Date object in local time.
+  const convertISTtoLocal = (dateStr) => {
+    // Check if dateStr already has a timezone offset.
+    if (!/[\+\-]\d{2}:?\d{2}$/.test(dateStr)) {
+      // Append the IST offset ("GMT+0530") if missing.
+      dateStr += ' GMT+0530';
+    }
+    return new Date(dateStr);
+  };
+
+  // Format the date & time based on the user's local settings with AM/PM.
   const formatDateTime = (dateStr) => {
-    const date = new Date(dateStr);
+    const date = convertISTtoLocal(dateStr);
     if (isNaN(date.getTime())) {
       return 'Invalid Date';
     }
@@ -38,7 +48,7 @@ function MaintenanceMode() {
 
   const expectedBackMessage =
     maintenanceData && maintenanceData.expectedBackAt ? (
-      <p className="text-black-900 mt-8">
+      <p className="text-black mt-8">
         Services are live in {formatDateTime(maintenanceData.expectedBackAt)}.
       </p>
     ) : null;
