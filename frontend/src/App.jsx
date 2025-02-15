@@ -54,7 +54,7 @@ function AppContent() {
   };
 
   // Show maintenance page for all users except default developer
-  if (maintenanceMode && user?.email !== 'devvineel@gmail.com') {
+  if (maintenanceMode && user?.role !== 'developer') {
     return <MaintenancePage />;
   }
 
