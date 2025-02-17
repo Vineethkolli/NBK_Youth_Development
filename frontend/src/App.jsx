@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -22,41 +22,18 @@ import Vibe from './pages/Vibe';
 import Moments from './pages/Moments';
 import LetsPlay from './pages/LetsPlay';
 import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { HiddenProfileProvider } from './context/HiddenProfileContext';
 import { initializeAnalytics, trackPageView } from './utils/analytics';
 import { LanguageProvider } from './context/LanguageContext';
 import Notifications from './pages/Notifications';
-import MaintenancePage from './components/developer/MaintenanceMode';
-import axios from 'axios';
-import { API_URL } from './utils/config';
 
 function AppContent() {
   const location = useLocation();
-  const { user } = useAuth();
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   useEffect(() => {
     trackPageView(location.pathname + location.search);
   }, [location]);
-
-  useEffect(() => {
-    checkMaintenanceMode();
-  }, []);
-
-  const checkMaintenanceMode = async () => {
-    try {
-      const { data } = await axios.get(`${API_URL}/api/maintenance/status`);
-      setMaintenanceMode(data.isEnabled);
-    } catch (error) {
-      console.error('Failed to check maintenance status:', error);
-    }
-  };
-
-  // Show maintenance page for all users except default developer
-  if (maintenanceMode && user?.role !== 'developer') {
-    return <MaintenancePage />;
-  }
 
   return (
     <>
@@ -66,6 +43,7 @@ function AppContent() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
         </Route>
+
         <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
@@ -96,12 +74,12 @@ function App() {
 
   return (
     <AuthProvider>
-      <LanguageProvider>
-        <HiddenProfileProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </HiddenProfileProvider>
+    <LanguageProvider>
+      <HiddenProfileProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </HiddenProfileProvider>
       </LanguageProvider>
     </AuthProvider>
   );
