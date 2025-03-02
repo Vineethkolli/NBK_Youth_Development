@@ -49,6 +49,7 @@ function Settings() {
           <h3 className="text-lg font-medium flex items-center">
             <Bell className="mr-2" /> Notifications
           </h3>
+          <Notifications />
         </div>
 
         {/* Install App Section */}

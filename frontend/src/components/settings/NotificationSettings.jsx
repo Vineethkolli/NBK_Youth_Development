@@ -11,14 +11,29 @@ const NotificationSettings = () => {
   const [subscription, setSubscription] = useState(null);
   const [permissionStatus, setPermissionStatus] = useState(Notification.permission);
   const [showResetPrompt, setShowResetPrompt] = useState(false);
+  const [isPushSupported, setIsPushSupported] = useState(true);
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then(registerServiceWorker)
-        .catch((error) => console.error('Service Worker Error:', error));
+    // Check for service worker support
+    if (!('serviceWorker' in navigator)) {
+      console.warn('Service Workers are not supported in this browser.');
+      setIsPushSupported(false);
+      return;
     }
+    // Check for Push API support
+    if (!('PushManager' in window)) {
+      console.warn('Push notifications are not supported in this browser.');
+      setIsPushSupported(false);
+      return;
+    }
+
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then(registerServiceWorker)
+      .catch((error) => {
+        console.error('Service Worker Error:', error);
+        setIsPushSupported(false);
+      });
     getSubscription();
   }, []);
 
@@ -73,10 +88,25 @@ const NotificationSettings = () => {
   };
 
   const getSubscription = async () => {
-    const registration = await navigator.serviceWorker.ready;
-    const existingSubscription = await registration.pushManager.getSubscription();
-    setSubscription(existingSubscription);
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const existingSubscription = await registration.pushManager.getSubscription();
+      setSubscription(existingSubscription);
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+    }
   };
+
+  // If push notifications are not supported, show an alternate UI message.
+  if (!isPushSupported) {
+    return (
+      <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <p className="text-red-600">
+          Push notifications are not supported on your browser. Please install our PWA for full functionality.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-4">
