@@ -6,35 +6,43 @@ import { urlBase64ToUint8Array } from '../../utils/vapidKeys';
 import { useAuth } from '../../context/AuthContext';
 import { Bell } from 'lucide-react';
 
+// Helper functions for detecting iOS and standalone mode:
+const isIos = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+};
+
+const isInStandaloneMode = () => {
+  return (
+    ('standalone' in window.navigator && window.navigator.standalone) ||
+    window.matchMedia('(display-mode: standalone)').matches
+  );
+};
+
 const NotificationSettings = () => {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState(null);
   const [permissionStatus, setPermissionStatus] = useState(Notification.permission);
   const [showResetPrompt, setShowResetPrompt] = useState(false);
-  const [isPushSupported, setIsPushSupported] = useState(true);
+  const [deviceIsIos, setDeviceIsIos] = useState(false);
+  const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    // Check for service worker support
-    if (!('serviceWorker' in navigator)) {
-      console.warn('Service Workers are not supported in this browser.');
-      setIsPushSupported(false);
-      return;
-    }
-    // Check for Push API support
-    if (!('PushManager' in window)) {
-      console.warn('Push notifications are not supported in this browser.');
-      setIsPushSupported(false);
-      return;
-    }
+    // Detect if device is iOS and if running in standalone mode
+    const iOS = isIos();
+    setDeviceIsIos(iOS);
+    setInstalled(isInStandaloneMode());
 
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then(registerServiceWorker)
-      .catch((error) => {
-        console.error('Service Worker Error:', error);
-        setIsPushSupported(false);
-      });
-    getSubscription();
+    // Only register the service worker and get subscription if supported.
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(registerServiceWorker)
+        .catch((error) => console.error('Service Worker Error:', error));
+
+      getSubscription();
+    } else {
+      console.warn('Service workers or push notifications are not supported in this browser');
+    }
   }, []);
 
   const registerServiceWorker = async (registration) => {
@@ -69,17 +77,17 @@ const NotificationSettings = () => {
       const publicVapidKey = response.data.publicKey;
       const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
 
-      const subscription = await registration.pushManager.subscribe({
+      const newSubscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: convertedVapidKey,
       });
 
       await axios.post(`${API_URL}/api/notifications/subscribe`, {
         registerId: user.registerId,
-        subscription,
+        subscription: newSubscription,
       });
 
-      setSubscription(subscription);
+      setSubscription(newSubscription);
       toast.success('Notifications enabled successfully');
     } catch (error) {
       console.error('Subscription error:', error);
@@ -93,17 +101,20 @@ const NotificationSettings = () => {
       const existingSubscription = await registration.pushManager.getSubscription();
       setSubscription(existingSubscription);
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      console.error('Error checking subscription:', error);
     }
   };
 
-  // If push notifications are not supported, show an alternate UI message.
-  if (!isPushSupported) {
+  // On iOS non-installed mode, show a helpful message instead of the notification controls.
+  if (deviceIsIos && !installed) {
     return (
       <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <p className="text-red-600">
-          Push notifications are not supported on your browser. Please install our PWA for full functionality.
-        </p>
+        <div>
+          <h3 className="text-lg font-medium">Notifications Unavailable</h3>
+          <p className="mt-2 text-sm text-gray-500">
+            On iOS, push notifications are only supported when the app is installed via "Add to Home Screen". Please install the app to enable notifications.
+          </p>
+        </div>
       </div>
     );
   }
@@ -118,7 +129,7 @@ const NotificationSettings = () => {
           </p>
           {showResetPrompt && (
             <p className="mt-2 text-sm text-red-600">
-              Notifications are blocked. Reset permissions by clearing the app data in your settings or clicking the info "i" icon near the URL bar.
+              Notifications are blocked. Reset permissions by clearing the app data or using the in-browser settings.
             </p>
           )}
         </div>
