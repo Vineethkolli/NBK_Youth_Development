@@ -11,22 +11,6 @@ const NotificationSettings = () => {
   const [subscription, setSubscription] = useState(null);
   const [permissionStatus, setPermissionStatus] = useState(Notification.permission);
   const [showResetPrompt, setShowResetPrompt] = useState(false);
-  
-  // States to detect platform and installation status
-  const [platform, setPlatform] = useState(null);
-  const [isInstalled, setIsInstalled] = useState(true);
-
-  // Detect platform and PWA installation for iOS
-  useEffect(() => {
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      setPlatform('ios');
-      // On iOS, window.navigator.standalone is true if the app is installed as PWA
-      setIsInstalled(window.navigator.standalone);
-    } else {
-      setPlatform('other');
-      setIsInstalled(true);
-    }
-  }, []);
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -70,17 +54,17 @@ const NotificationSettings = () => {
       const publicVapidKey = response.data.publicKey;
       const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
 
-      const newSubscription = await registration.pushManager.subscribe({
+      const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: convertedVapidKey,
       });
 
       await axios.post(`${API_URL}/api/notifications/subscribe`, {
         registerId: user.registerId,
-        subscription: newSubscription,
+        subscription,
       });
 
-      setSubscription(newSubscription);
+      setSubscription(subscription);
       toast.success('Notifications enabled successfully');
     } catch (error) {
       console.error('Subscription error:', error);
@@ -89,26 +73,10 @@ const NotificationSettings = () => {
   };
 
   const getSubscription = async () => {
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const existingSubscription = await registration.pushManager.getSubscription();
-      setSubscription(existingSubscription);
-    } catch (error) {
-      console.error('Error getting subscription:', error);
-    }
+    const registration = await navigator.serviceWorker.ready;
+    const existingSubscription = await registration.pushManager.getSubscription();
+    setSubscription(existingSubscription);
   };
-
-  // If on iOS and not installed as a PWA, show a message instead of the notification settings.
-  if (platform === 'ios' && !isInstalled) {
-    return (
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <h3 className="text-lg font-medium">Notifications</h3>
-        <p className="text-sm text-gray-500">
-          Please install the web app as a PWA first. Once installed, you will be able to receive notifications.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-4">
