@@ -6,6 +6,7 @@ import { API_URL } from '../utils/config';
 import PaymentDetails from '../components/developer/PaymentDetails';
 import ClearData from '../components/developer/ClearData';
 import MaintenanceMode from '../components/developer/MaintenanceMode';
+import CollectionsList from '../components/developer/Databases';
 
 function DeveloperOptions() {
   const { user } = useAuth();
@@ -93,6 +94,9 @@ function DeveloperOptions() {
 
       {/* Clear Data */}
       <ClearData />
+
+      {/* Databases */}
+      <CollectionsList />
     </div>
   );
 }
