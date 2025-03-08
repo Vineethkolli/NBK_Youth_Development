@@ -27,8 +27,10 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { HiddenProfileProvider } from './context/HiddenProfileContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { MaintenanceModeProvider, useMaintenanceMode } from './context/MaintenanceModeContext';
+import usePreventNumericTranslation from './hooks/usePreventNumericTranslation';
 
 function AppContent() {
+  usePreventNumericTranslation();
   const { user } = useAuth();
   const { isMaintenanceMode } = useMaintenanceMode();
   if (isMaintenanceMode && user?.role !== 'developer') {
