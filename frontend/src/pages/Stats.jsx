@@ -152,7 +152,7 @@ function Stats() {
               <div>
                 <p className="font-semibold">Amount Left</p>
                 <p className="text-xs text-gray-500">(Excluding Previous Year Amount)</p>
-                <p className={`text-lg font-bold ${stats.budgetStats.amountLeft.amount < 0 ? 'text-red-600' : ''}`}>
+                <p className={`text-lg font-bold notranslate ${stats.budgetStats.amountLeft.amount < 0 ? 'text-red-600' : ''}`}>
     {formatAmount(stats.budgetStats.amountLeft.amount)}
     {stats.budgetStats.amountLeft.amount < 0 && (
       <span className="ml-2 text-red-500 font-semibold">(Shortage)</span>
