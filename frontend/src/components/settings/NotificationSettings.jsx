@@ -11,8 +11,13 @@ const NotificationSettings = () => {
   const [subscription, setSubscription] = useState(null);
   const [permissionStatus, setPermissionStatus] = useState(Notification.permission);
   const [showResetPrompt, setShowResetPrompt] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
+    // Detect if the user is on an iOS device
+    const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    setIsIOS(isIosDevice);
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
@@ -27,6 +32,11 @@ const NotificationSettings = () => {
   };
 
   const askPermission = async () => {
+    // If on iOS and not installed as a PWA, do not attempt to request notifications.
+    if (isIOS && !window.navigator.standalone) {
+      toast.info("Please install the app to enable notifications.");
+      return;
+    }
     try {
       const permissionResult = await Notification.requestPermission();
       setPermissionStatus(permissionResult);
@@ -92,17 +102,23 @@ const NotificationSettings = () => {
             </p>
           )}
         </div>
-        {!subscription ? (
-          <button
-            onClick={askPermission}
-            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-          >
-            <Bell className="mr-2 h-5 w-5" /> Allow Notifications
-          </button>
-        ) : (
-          <div className="flex items-center text-green-600">
-            <Bell className="mr-2 h-5 w-5" /> Notifications Allowed
+        {isIOS && !window.navigator.standalone ? (
+          <div className="text-sm text-gray-500">
+            Please install the app to enable notifications.
           </div>
+        ) : (
+          !subscription ? (
+            <button
+              onClick={askPermission}
+              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            >
+              <Bell className="mr-2 h-5 w-5" /> Allow Notifications
+            </button>
+          ) : (
+            <div className="flex items-center text-green-600">
+              <Bell className="mr-2 h-5 w-5" /> Notifications Allowed
+            </div>
+          )
         )}
       </div>
     </div>
