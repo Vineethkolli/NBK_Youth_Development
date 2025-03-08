@@ -24,35 +24,34 @@ router.get("/collections", async (req, res) => {
 
         const db = mongoose.connection.db;
 
-        // Get overall database stats
+        // Get overall database stats (including storage size)
         const dbStats = await db.stats();
-        // Format the overall database size into a human-readable string
-        const dbSizeFormatted = formatBytes(dbStats.dataSize);
+        const dbStorageSizeFormatted = formatBytes(dbStats.storageSize);
 
         // Get the list of collections
         const collections = await db.listCollections().toArray();
 
-        // Get stats for each collection using the collStats command
+        // Get storage stats for each collection using the collStats command
         const collectionsWithSize = await Promise.all(
             collections.map(async (collection) => {
                 try {
                     const stats = await db.command({ collStats: collection.name });
                     return {
                         name: collection.name,
-                        size: stats.size, // raw bytes (optional)
-                        formattedSize: formatBytes(stats.size), // formatted value (KB, MB, etc.)
+                        storageSize: stats.storageSize, // raw bytes
+                        formattedStorageSize: formatBytes(stats.storageSize), // human-friendly
                     };
                 } catch (err) {
                     console.error(`Failed to get stats for collection: ${collection.name}`, err);
-                    return { name: collection.name, size: null, formattedSize: "N/A" };
+                    return { name: collection.name, storageSize: null, formattedStorageSize: "N/A" };
                 }
             })
         );
 
-        // Return overall database size and collection stats
+        // Return overall DB storage size and collection stats
         res.json({
-            dbSize: dbStats.dataSize, // raw bytes (optional)
-            dbSizeFormatted,
+            dbStorageSize: dbStats.storageSize,
+            dbStorageSizeFormatted,
             collections: collectionsWithSize,
         });
     } catch (error) {

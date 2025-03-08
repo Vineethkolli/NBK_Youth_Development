@@ -3,7 +3,7 @@ import { API_URL } from '../../utils/config';
 
 const CollectionsList = () => {
     const [collections, setCollections] = useState([]);
-    const [dbSizeFormatted, setDbSizeFormatted] = useState(null);
+    const [dbStorageSizeFormatted, setDbStorageSizeFormatted] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -18,7 +18,7 @@ const CollectionsList = () => {
                 }
 
                 setCollections(data.collections);
-                setDbSizeFormatted(data.dbSizeFormatted);
+                setDbStorageSizeFormatted(data.dbStorageSizeFormatted);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching collections:", error);
@@ -32,7 +32,7 @@ const CollectionsList = () => {
 
     return (
         <div>
-            <h2>Database Collections & Sizes</h2>
+            <h2>Database Collections & Storage Sizes</h2>
             {loading ? (
                 <p>Loading...</p>
             ) : error ? (
@@ -40,7 +40,7 @@ const CollectionsList = () => {
             ) : (
                 <>
                     <p>
-                        <strong>Database Size:</strong> {dbSizeFormatted}
+                        <strong>Database Storage Size:</strong> {dbStorageSizeFormatted}
                     </p>
                     {collections.length === 0 ? (
                         <p>No collections found.</p>
@@ -49,14 +49,14 @@ const CollectionsList = () => {
                             <thead>
                                 <tr>
                                     <th>Collection Name</th>
-                                    <th>Size</th>
+                                    <th>Storage Size</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {collections.map((collection) => (
                                     <tr key={collection.name}>
                                         <td>{collection.name}</td>
-                                        <td>{collection.formattedSize}</td>
+                                        <td>{collection.formattedStorageSize}</td>
                                     </tr>
                                 ))}
                             </tbody>
