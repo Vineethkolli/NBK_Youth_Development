@@ -11,14 +11,12 @@ const NotificationSettings = () => {
   const [subscription, setSubscription] = useState(null);
   const [permissionStatus, setPermissionStatus] = useState(Notification.permission);
   const [showResetPrompt, setShowResetPrompt] = useState(false);
-  const [isSupported, setIsSupported] = useState(true);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    // Check for Service Worker and Push Manager support
-    if (!('serviceWorker' in navigator && 'PushManager' in window)) {
-      setIsSupported(false);
-      return;
-    }
+    // Detect if the user is on an iOS device
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    setIsIOS(iOS);
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -34,6 +32,15 @@ const NotificationSettings = () => {
   };
 
   const askPermission = async () => {
+    // If on iOS and not installed as a PWA, do not attempt to request notifications.
+    if (
+      isIOS &&
+      !window.navigator.standalone &&
+      !window.matchMedia('(display-mode: standalone)').matches
+    ) {
+      toast.info('Please install the app to enable notifications.');
+      return;
+    }
     try {
       const permissionResult = await Notification.requestPermission();
       setPermissionStatus(permissionResult);
@@ -80,25 +87,10 @@ const NotificationSettings = () => {
   };
 
   const getSubscription = async () => {
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const existingSubscription = await registration.pushManager.getSubscription();
-      setSubscription(existingSubscription);
-    } catch (error) {
-      console.error('Error getting subscription:', error);
-    }
+    const registration = await navigator.serviceWorker.ready;
+    const existingSubscription = await registration.pushManager.getSubscription();
+    setSubscription(existingSubscription);
   };
-
-  // If push notifications are not supported, show a friendly message
-  if (!isSupported) {
-    return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-sm text-gray-500">
-          Push notifications are not supported on your device or browser.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-4">
@@ -110,11 +102,18 @@ const NotificationSettings = () => {
           </p>
           {showResetPrompt && (
             <p className="mt-2 text-sm text-red-600">
-              Notifications are blocked. Reset permissions by clearing the app data in your settings or clicking the info "i" icon near the URL bar.
+              Notifications are blocked. Reset permissions by clearing the app data in your
+              settings or clicking the info "i" icon near the URL bar.
             </p>
           )}
         </div>
-        {!subscription ? (
+        {isIOS &&
+        !window.navigator.standalone &&
+        !window.matchMedia('(display-mode: standalone)').matches ? (
+          <div className="text-sm text-gray-500">
+            Please install the app to enable notifications.
+          </div>
+        ) : !subscription ? (
           <button
             onClick={askPermission}
             className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
