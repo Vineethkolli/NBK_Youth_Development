@@ -23,7 +23,7 @@ const NotificationSettings = () => {
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-medium">Notifications Permission</h3>
         <p className="text-sm text-gray-500">
-          To use notifications, please download the app.
+          To allow notifications, please download the app.
         </p>
       </div>
     );
