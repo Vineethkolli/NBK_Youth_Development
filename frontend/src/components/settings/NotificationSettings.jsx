@@ -11,13 +11,8 @@ const NotificationSettings = () => {
   const [subscription, setSubscription] = useState(null);
   const [permissionStatus, setPermissionStatus] = useState(Notification.permission);
   const [showResetPrompt, setShowResetPrompt] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    // Detect if the user is on an iOS device
-    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    setIsIOS(iOS);
-
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
@@ -32,15 +27,6 @@ const NotificationSettings = () => {
   };
 
   const askPermission = async () => {
-    // If on iOS and not installed as a PWA, do not attempt to request notifications.
-    if (
-      isIOS &&
-      !window.navigator.standalone &&
-      !window.matchMedia('(display-mode: standalone)').matches
-    ) {
-      toast.info('Please install the app to enable notifications.');
-      return;
-    }
     try {
       const permissionResult = await Notification.requestPermission();
       setPermissionStatus(permissionResult);
@@ -102,18 +88,11 @@ const NotificationSettings = () => {
           </p>
           {showResetPrompt && (
             <p className="mt-2 text-sm text-red-600">
-              Notifications are blocked. Reset permissions by clearing the app data in your
-              settings or clicking the info "i" icon near the URL bar.
+              Notifications are blocked. Reset permissions by clearing the app data in your settings or clicking the info "i" icon near the URL bar.
             </p>
           )}
         </div>
-        {isIOS &&
-        !window.navigator.standalone &&
-        !window.matchMedia('(display-mode: standalone)').matches ? (
-          <div className="text-sm text-gray-500">
-            Please install the app to enable notifications.
-          </div>
-        ) : !subscription ? (
+        {!subscription ? (
           <button
             onClick={askPermission}
             className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
