@@ -22,7 +22,7 @@ import gameRoutes from './routes/games.js';
 import notificationRoutes from './routes/notifications.js';
 import { createDefaultDeveloper } from './utils/setupDefaults.js';
 import maintenanceRoutes from './routes/maintenance.js';
-import databaseRoutes from './routes/databases.js';
+
 
 dotenv.config();
 
@@ -70,7 +70,6 @@ app.use('/api/moments', momentsRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
-app.use("/api/databases", databaseRoutes);
 
 // Health check endpoint
 app.get('/', (req, res) => {
