@@ -22,14 +22,14 @@ function EstimatedExpenseTable({
                 Purpose
               </th>
             )}
-            {visibleColumns.previousYearAmount && (
+            {visibleColumns.previousAmount && (
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Previous Year Amount
+                Previous Amount
               </th>
             )}
-            {visibleColumns.currentAmount && (
+            {visibleColumns.presentAmount && (
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Current Amount
+                Present Amount
               </th>
             )}
             {visibleColumns.others && (
@@ -55,14 +55,14 @@ function EstimatedExpenseTable({
                   {expense.purpose}
                 </td>
               )}
-              {visibleColumns.previousYearAmount && (
+              {visibleColumns.previousAmount && (
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {expense.previousYearAmount}
+                  {expense.previousAmount}
                 </td>
               )}
-              {visibleColumns.currentAmount && (
+              {visibleColumns.presentAmount && (
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {expense.currentAmount}
+                  {expense.presentAmount}
                 </td>
               )}
               {visibleColumns.others && (

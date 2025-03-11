@@ -6,16 +6,16 @@ function EstimationForm({ type, mode, data, onSubmit, onClose }) {
   const initialState = type === 'income'
     ? {
         name: '',
-        previousYearAmount: '',
-        currentAmount: '',
-        category: 'youth',     // default value set to "youth"
+        previousAmount: '',
+        presentAmount: '',
+        belongsTo: 'youth',     // default value set to "youth"
         status: 'not paid',    // default value set to "not paid"
         others: ''
       }
     : {
         purpose: '',
-        previousYearAmount: '',
-        currentAmount: '',
+        previousAmount: '',
+        presentAmount: '',
         contact: '',
         others: ''
       };
@@ -70,21 +70,21 @@ function EstimationForm({ type, mode, data, onSubmit, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Previous Year Amount</label>
+                <label className="block text-sm font-medium text-gray-700">Previous Amount</label>
                 <input
                   type="number"
-                  name="previousYearAmount"
-                  value={formData.previousYearAmount}
+                  name="previousAmount"
+                  value={formData.previousAmount}
                   onChange={handleChange}
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Current Amount</label>
+                <label className="block text-sm font-medium text-gray-700">Present Amount</label>
                 <input
                   type="number"
-                  name="currentAmount"
-                  value={formData.currentAmount}
+                  name="presentAmount"
+                  value={formData.presentAmount}
                   onChange={handleChange}
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                 />
@@ -92,8 +92,8 @@ function EstimationForm({ type, mode, data, onSubmit, onClose }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Belongs to</label>
                 <select
-                  name="category"
-                  value={formData.category}
+                  name="belongsTo"
+                  value={formData.belongsTo}
                   onChange={handleChange}
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                   required
@@ -140,21 +140,21 @@ function EstimationForm({ type, mode, data, onSubmit, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Previous Year Amount</label>
+                <label className="block text-sm font-medium text-gray-700">Previous Amount</label>
                 <input
                   type="number"
-                  name="previousYearAmount"
-                  value={formData.previousYearAmount}
+                  name="previousAmount"
+                  value={formData.previousAmount}
                   onChange={handleChange}
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Current Amount</label>
+                <label className="block text-sm font-medium text-gray-700">Present Amount</label>
                 <input
                   type="number"
-                  name="currentAmount"
-                  value={formData.currentAmount}
+                  name="presentAmount"
+                  value={formData.presentAmount}
                   onChange={handleChange}
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                 />

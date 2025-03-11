@@ -9,14 +9,14 @@ import EstimationForm from './Form';
 function ExpenseSection({ refreshStats }) {
   const [expenses, setExpenses] = useState([]);
   const [expenseFilters, setExpenseFilters] = useState({
-    sortField: 'currentAmount',
+    sortField: 'presentAmount',
     sortOrder: ''
   });
   const [expenseColumns, setExpenseColumns] = useState({
     sno: true,
     purpose: true,
-    previousYearAmount: true,
-    currentAmount: true,
+    previousAmount: true,
+    presentAmount: true,
     others: false
   });
   // Form modal state

@@ -11,15 +11,15 @@ function IncomeSection({ refreshStats }) {
   const [incomeFilters, setIncomeFilters] = useState({
     status: '',
     belongsTo: '',
-    sortField: 'currentAmount',
+    sortField: 'presentAmount',
     sortOrder: ''
   });
   const [incomeColumns, setIncomeColumns] = useState({
     sno: true,
     name: true,
-    previousYearAmount: true,
-    currentAmount: true,
-    category: true,
+    previousAmount: true,
+    presentAmount: true,
+    belongsTo: true,
     status: true,
     others: false
   });
@@ -83,9 +83,14 @@ function IncomeSection({ refreshStats }) {
       fetchIncomes();
       if (refreshStats) refreshStats();
     } catch (error) {
-      toast.error('Failed to submit form');
+      // Check if error response has a custom message (like duplicate name)
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Failed to submit form');
+      }
     }
-  };
+  };  
 
   return (
     <div className="space-y-4">

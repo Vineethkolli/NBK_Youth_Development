@@ -22,17 +22,17 @@ function EstimatedIncomeTable({
                 Name
               </th>
             )}
-            {visibleColumns.previousYearAmount && (
+            {visibleColumns.previousAmount && (
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Previous Year Amount
+                Previous Amount
               </th>
             )}
-            {visibleColumns.currentAmount && (
+            {visibleColumns.presentAmount && (
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Current Amount
               </th>
             )}
-            {visibleColumns.category && (
+            {visibleColumns.belongsTo && (
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Belongs to
               </th>
@@ -65,19 +65,19 @@ function EstimatedIncomeTable({
                   {income.name}
                 </td>
               )}
-              {visibleColumns.previousYearAmount && (
+              {visibleColumns.previousAmount && (
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {income.previousYearAmount}
+                  {income.previousAmount}
                 </td>
               )}
-              {visibleColumns.currentAmount && (
+              {visibleColumns.presentAmount && (
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {income.currentAmount}
+                  {income.presentAmount}
                 </td>
               )}
-              {visibleColumns.category && (
+              {visibleColumns.belongsTo && (
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {income.category}
+                  {income.belongsTo}
                 </td>
               )}
               {visibleColumns.status && (

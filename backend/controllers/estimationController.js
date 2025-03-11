@@ -2,11 +2,18 @@ import EstimatedIncome from '../models/EstimatedIncome.js';
 import EstimatedExpense from '../models/EstimatedExpense.js';
 
 export const estimationController = {
-  // Income Methods
   getAllEstimatedIncomes: async (req, res) => {
     try {
-      const { sortOrder, sortField } = req.query;
+      const { sortOrder, sortField, belongsTo, status } = req.query;
       let query = EstimatedIncome.find();
+
+      if (belongsTo) {
+        query = query.where('belongsTo', belongsTo);
+      }
+
+      if (status) {
+        query = query.where('status', status);
+      }
 
       if (sortOrder && sortField) {
         const sortObj = {};
@@ -22,9 +29,15 @@ export const estimationController = {
       res.status(500).json({ message: 'Failed to fetch estimated incomes' });
     }
   },
-
   createEstimatedIncome: async (req, res) => {
     try {
+      const { name } = req.body;
+      // Check if an income with this name already exists
+      const existingIncome = await EstimatedIncome.findOne({ name });
+      if (existingIncome) {
+        return res.status(400).json({ message: 'Name already exists' });
+      }
+  
       const count = await EstimatedIncome.countDocuments();
       const income = await EstimatedIncome.create({
         ...req.body,
@@ -32,14 +45,24 @@ export const estimationController = {
       });
       res.status(201).json(income);
     } catch (error) {
-      
-    console.error('Error creating income:', error); // Log error details
+      console.error('Error creating income:', error);
       res.status(500).json({ message: 'Failed to create estimated income' });
     }
   },
 
   updateEstimatedIncome: async (req, res) => {
     try {
+      const { name } = req.body;
+      if (name) {
+        // Check if another income with the same name exists (excluding the current one)
+        const existingIncome = await EstimatedIncome.findOne({
+          name,
+          _id: { $ne: req.params.id }
+        });
+        if (existingIncome) {
+          return res.status(400).json({ message: 'Name already exists' });
+        }
+      }
       const income = await EstimatedIncome.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -60,7 +83,6 @@ export const estimationController = {
     }
   },
 
-  // Expense Methods
   getAllEstimatedExpenses: async (req, res) => {
     try {
       const expenses = await EstimatedExpense.find().sort({ EEID: 1 });
@@ -105,19 +127,18 @@ export const estimationController = {
     }
   },
 
-  // Stats Methods
   getEstimationStats: async (req, res) => {
     try {
       const incomes = await EstimatedIncome.find();
       const expenses = await EstimatedExpense.find();
 
-      const totalEstimatedIncome = incomes.reduce((sum, income) => sum + income.currentAmount, 0);
+      const totalEstimatedIncome = incomes.reduce((sum, income) => sum + income.presentAmount, 0);
       const totalEstimatedPaidIncome = incomes
         .filter(income => income.status === 'paid')
-        .reduce((sum, income) => sum + income.currentAmount, 0);
+        .reduce((sum, income) => sum + income.presentAmount, 0);
       const totalEstimatedNotPaidIncome = totalEstimatedIncome - totalEstimatedPaidIncome;
       
-      const totalEstimatedExpense = expenses.reduce((sum, expense) => sum + expense.currentAmount, 0);
+      const totalEstimatedExpense = expenses.reduce((sum, expense) => sum + expense.presentAmount, 0);
       const balance = totalEstimatedIncome - totalEstimatedExpense;
 
       res.json({

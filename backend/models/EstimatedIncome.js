@@ -3,17 +3,18 @@ import mongoose from 'mongoose';
 const estimatedIncomeSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
-  previousYearAmount: {
+  previousAmount: {
     type: Number,
     default: 0
   },
-  currentAmount: {
+  presentAmount: {
     type: Number,
     default: 0
   },
-  category: {
+  belongsTo: {
     type: String,
     enum: ['youth', 'villagers'],
     default: 'youth'
@@ -27,7 +28,7 @@ const estimatedIncomeSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  EIID: {  // New unique identifier for estimated income
+  EIID: {
     type: String,
     required: true,
     unique: true

@@ -5,11 +5,11 @@ const estimatedExpenseSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  previousYearAmount: {
+  previousAmount: {
     type: Number,
     default: 0
   },
-  currentAmount: {
+  presentAmount: {
     type: Number,
     default: 0
   },
@@ -17,7 +17,7 @@ const estimatedExpenseSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  EEID: {  // New unique identifier for estimated expense
+  EEID: {
     type: String,
     required: true,
     unique: true
