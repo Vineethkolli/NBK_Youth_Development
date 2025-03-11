@@ -17,10 +17,10 @@ function IncomeSection({ refreshStats }) {
   const [incomeColumns, setIncomeColumns] = useState({
     sno: true,
     name: true,
-    previousAmount: true,
+    previousAmount: false,
     presentAmount: true,
-    belongsTo: true,
-    status: true,
+    belongsTo: false,
+    status: false,
     others: false
   });
   // Form modal state

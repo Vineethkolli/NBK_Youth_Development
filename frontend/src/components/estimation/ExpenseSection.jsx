@@ -15,7 +15,7 @@ function ExpenseSection({ refreshStats }) {
   const [expenseColumns, setExpenseColumns] = useState({
     sno: true,
     purpose: true,
-    previousAmount: true,
+    previousAmount: false,
     presentAmount: true,
     others: false
   });

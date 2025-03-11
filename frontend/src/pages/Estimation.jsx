@@ -34,9 +34,6 @@ function Estimation() {
     }
   };
 
-  if (!['developer', 'financier'].includes(user?.role)) {
-    return <div>Access denied</div>;
-  }
 
   return (
     <div className="space-y-6">
