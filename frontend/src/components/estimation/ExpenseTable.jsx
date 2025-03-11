@@ -32,11 +32,6 @@ function EstimatedExpenseTable({
                 Current Amount
               </th>
             )}
-            {visibleColumns.contact && (
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Contact
-              </th>
-            )}
             {visibleColumns.others && (
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Others
@@ -68,11 +63,6 @@ function EstimatedExpenseTable({
               {visibleColumns.currentAmount && (
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {expense.currentAmount}
-                </td>
-              )}
-              {visibleColumns.contact && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {expense.contact}
                 </td>
               )}
               {visibleColumns.others && (

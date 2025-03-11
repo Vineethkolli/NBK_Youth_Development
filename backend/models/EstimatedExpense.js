@@ -13,10 +13,6 @@ const estimatedExpenseSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  contact: {
-    type: String,
-    default: ''
-  },
   others: {
     type: String,
     default: ''

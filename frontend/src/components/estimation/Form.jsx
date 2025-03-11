@@ -160,16 +160,6 @@ function EstimationForm({ type, mode, data, onSubmit, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Contact</label>
-                <input
-                  type="text"
-                  name="contact"
-                  value={formData.contact}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium text-gray-700">Others</label>
                 <input
                   type="text"
