@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Filter } from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { API_URL } from '../../utils/config';
@@ -52,7 +52,6 @@ function ExpenseSection({ refreshStats }) {
       toast.error('Failed to delete expense');
     }
   };
-  
 
   const handleAdd = () => {
     setFormMode('add');
@@ -86,18 +85,23 @@ function ExpenseSection({ refreshStats }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center space-x-4">
-        <Filter className="h-5 w-5 text-gray-400" />
-        <select
-          value={expenseFilters.sortOrder}
-          onChange={(e) => setExpenseFilters({ ...expenseFilters, sortOrder: e.target.value })}
-          className="form-select"
-        >
-          <option value="">Sort</option>
-          
-          <option value="desc">Descending</option>
-          <option value="asc">Ascending</option>
-        </select>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Filter className="h-5 w-5 text-gray-400" />
+          <select
+            value={expenseFilters.sortOrder}
+            onChange={(e) => setExpenseFilters({ ...expenseFilters, sortOrder: e.target.value })}
+            className="form-select"
+          >
+            <option value="">Sort</option>
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </select>
+        </div>
+        <button onClick={handleAdd} className="btn-primary">
+              <Plus className="h-4 w-4 mr-2" />
+          Add New
+        </button>
       </div>
       
       <div className="bg-white rounded-lg shadow">
@@ -121,7 +125,6 @@ function ExpenseSection({ refreshStats }) {
         <EstimatedExpenseTable
           expenses={expenses}
           visibleColumns={expenseColumns}
-          onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleExpenseDelete}
         />

@@ -3,9 +3,8 @@ import { Edit2, Trash2 } from 'lucide-react';
 function EstimatedExpenseTable({
   expenses,
   visibleColumns,
-  onAdd,
   onEdit,
-  onDelete
+  onDelete,
 }) {
   return (
     <div className="overflow-x-auto">
@@ -82,14 +81,7 @@ function EstimatedExpenseTable({
           ))}
         </tbody>
       </table>
-      <div className="mt-4">
-        <button
-          onClick={onAdd}
-          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-        >
-          Add
-        </button>
-      </div>
+      {/* Removed the "Add" button here */}
     </div>
   );
 }
