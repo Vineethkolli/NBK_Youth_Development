@@ -96,7 +96,13 @@ function IncomeSection({ refreshStats }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
+            {/* ADD NEW button with Plus icon */}
+        <button onClick={handleAdd} className="btn-primary">
+          <Plus className="h-4 w-4 mr-2" />
+          Add New
+        </button>
           <Filter className="h-5 w-5 text-gray-400" />
+          
           <select
             value={incomeFilters.sortOrder}
             onChange={(e) => setIncomeFilters({ ...incomeFilters, sortOrder: e.target.value })}
@@ -125,13 +131,9 @@ function IncomeSection({ refreshStats }) {
             <option value="not paid">Not Paid</option>
           </select>
         </div>
-        {/* ADD NEW button with Plus icon */}
-        <button onClick={handleAdd} className="btn-primary">
-          <Plus className="h-4 w-4 mr-2" />
-          Add New
-        </button>
-      </div>
+        
       
+      </div>
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b">
           <h2 className="font-medium">Visible Columns</h2>
