@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Filter } from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { API_URL } from '../../utils/config';
@@ -44,18 +44,18 @@ function IncomeSection({ refreshStats }) {
     }
   };
 
- const handleIncomeDelete = async (id) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this income?");
-  if (!confirmDelete) return;
+  const handleIncomeDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this income?");
+    if (!confirmDelete) return;
 
-  try {
-    await axios.delete(`${API_URL}/api/estimation/income/${id}`);
-    setIncomes(incomes.filter(income => income._id !== id));
-    if (refreshStats) refreshStats();
-  } catch (error) {
-    toast.error('Failed to delete income');
-  }
-};
+    try {
+      await axios.delete(`${API_URL}/api/estimation/income/${id}`);
+      setIncomes(incomes.filter(income => income._id !== id));
+      if (refreshStats) refreshStats();
+    } catch (error) {
+      toast.error('Failed to delete income');
+    }
+  };
 
   const handleAdd = () => {
     setFormMode('add');
@@ -90,40 +90,46 @@ function IncomeSection({ refreshStats }) {
         toast.error('Failed to submit form');
       }
     }
-  };  
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center space-x-4">
-        <Filter className="h-5 w-5 text-gray-400" />
-        <select
-          value={incomeFilters.sortOrder}
-          onChange={(e) => setIncomeFilters({ ...incomeFilters, sortOrder: e.target.value })}
-          className="form-select"
-        >
-          <option value="">Sort</option>
-          <option value="desc">Descending</option>
-          <option value="asc">Ascending</option>
-        </select>
-        <select
-          value={incomeFilters.belongsTo}
-          onChange={(e) => setIncomeFilters({ ...incomeFilters, belongsTo: e.target.value })}
-          className="form-select"
-        >
-          <option value="">Belongs To</option>
-          <option value="youth">Youth</option>
-          <option value="villagers">Villagers</option>
-        </select>
-        <select
-          value={incomeFilters.status}
-          onChange={(e) => setIncomeFilters({ ...incomeFilters, status: e.target.value })}
-          className="form-select"
-        >
-          <option value="">Status</option>
-          <option value="paid">Paid</option>
-          <option value="not paid">Not Paid</option>
-        </select>
-        
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Filter className="h-5 w-5 text-gray-400" />
+          <select
+            value={incomeFilters.sortOrder}
+            onChange={(e) => setIncomeFilters({ ...incomeFilters, sortOrder: e.target.value })}
+            className="form-select"
+          >
+            <option value="">Sort</option>
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </select>
+          <select
+            value={incomeFilters.belongsTo}
+            onChange={(e) => setIncomeFilters({ ...incomeFilters, belongsTo: e.target.value })}
+            className="form-select"
+          >
+            <option value="">Belongs To</option>
+            <option value="youth">Youth</option>
+            <option value="villagers">Villagers</option>
+          </select>
+          <select
+            value={incomeFilters.status}
+            onChange={(e) => setIncomeFilters({ ...incomeFilters, status: e.target.value })}
+            className="form-select"
+          >
+            <option value="">Status</option>
+            <option value="paid">Paid</option>
+            <option value="not paid">Not Paid</option>
+          </select>
+        </div>
+        {/* ADD NEW button with Plus icon */}
+        <button onClick={handleAdd} className="btn-primary">
+          <Plus className="h-4 w-4 mr-2" />
+          Add New
+        </button>
       </div>
       
       <div className="bg-white rounded-lg shadow">

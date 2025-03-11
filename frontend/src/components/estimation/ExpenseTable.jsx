@@ -81,7 +81,6 @@ function EstimatedExpenseTable({
           ))}
         </tbody>
       </table>
-      {/* Removed the "Add" button here */}
     </div>
   );
 }
