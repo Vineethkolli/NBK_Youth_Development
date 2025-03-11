@@ -1,28 +1,22 @@
 import express from 'express';
-import { auth } from '../middleware/auth.js';
+import { auth, checkRole } from '../middleware/auth.js';
 import { estimationController } from '../controllers/estimationController.js';
 
 const router = express.Router();
 
-// Income Routes
-router.get('/income', auth, estimationController.getEstimatedIncome);
-router.post('/income/row', auth, estimationController.addIncomeRow);
-router.put('/income/row/:rowId', auth, estimationController.updateIncomeRow);
-router.delete('/income/row/:rowId', auth, estimationController.deleteIncomeRow);
-router.put('/income/column/:columnId', auth, estimationController.updateIncomeColumn);
-router.delete('/income/column/:columnId', auth, estimationController.deleteIncomeColumn);
-router.put('/income/columns/order', auth, estimationController.updateIncomeColumnOrder);
+// Income routes
+router.get('/income', auth, estimationController.getAllEstimatedIncomes);
+router.post('/income', auth, checkRole(['developer', 'financier']), estimationController.createEstimatedIncome);
+router.put('/income/:id', auth, checkRole(['developer', 'financier']), estimationController.updateEstimatedIncome);
+router.delete('/income/:id', auth, checkRole(['developer', 'financier']), estimationController.deleteEstimatedIncome);
 
-// Expense Routes
-router.get('/expense', auth, estimationController.getEstimatedExpense);
-router.post('/expense/row', auth, estimationController.addExpenseRow);
-router.put('/expense/row/:rowId', auth, estimationController.updateExpenseRow);
-router.delete('/expense/row/:rowId', auth, estimationController.deleteExpenseRow);
-router.put('/expense/column/:columnId', auth, estimationController.updateExpenseColumn);
-router.delete('/expense/column/:columnId', auth, estimationController.deleteExpenseColumn);
-router.put('/expense/columns/order', auth, estimationController.updateExpenseColumnOrder);
+// Expense routes
+router.get('/expense', auth, estimationController.getAllEstimatedExpenses);
+router.post('/expense', auth, checkRole(['developer', 'financier']), estimationController.createEstimatedExpense);
+router.put('/expense/:id', auth, checkRole(['developer', 'financier']), estimationController.updateEstimatedExpense);
+router.delete('/expense/:id', auth, checkRole(['developer', 'financier']), estimationController.deleteEstimatedExpense);
 
-// Estimated Stats Route
-router.get('/stats', auth, estimationController.getEstimatedStats);
+// Stats route
+router.get('/stats', auth, estimationController.getEstimationStats);
 
 export default router;

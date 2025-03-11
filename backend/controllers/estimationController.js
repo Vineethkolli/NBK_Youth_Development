@@ -2,289 +2,131 @@ import EstimatedIncome from '../models/EstimatedIncome.js';
 import EstimatedExpense from '../models/EstimatedExpense.js';
 
 export const estimationController = {
-  // ----- Income Endpoints -----
-  getEstimatedIncome: async (req, res) => {
+  // Income Methods
+  getAllEstimatedIncomes: async (req, res) => {
     try {
-      let income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      if (!income) {
-        income = new EstimatedIncome({
-          columns: [
-            { id: 'sno', header: 'S.No', type: 'numeric', order: 0 },
-            { id: 'name', header: 'Name', type: 'string', order: 1 },
-            { id: 'prevAmt', header: 'Previous Year Amount', type: 'amount', order: 2 },
-            { id: 'currAmt', header: 'Current Amount', type: 'amount', order: 3 },
-            { id: 'category', header: 'Category', type: 'string', order: 4 },
-            { id: 'status', header: 'Status', type: 'string', order: 5 },
-            { id: 'informed', header: 'Informed', type: 'numeric', order: 6 },
-            { id: 'others', header: 'Others', type: 'string', order: 7 }
-          ],
-          rows: [],
-          createdBy: req.user.registerId
-        });
-        await income.save();
+      const { sortOrder, sortField } = req.query;
+      let query = EstimatedIncome.find();
+
+      if (sortOrder && sortField) {
+        const sortObj = {};
+        sortObj[sortField] = sortOrder === 'desc' ? -1 : 1;
+        query = query.sort(sortObj);
+      } else {
+        query = query.sort({ order: 1 });
       }
+
+      const incomes = await query.exec();
+      res.json(incomes);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch estimated incomes' });
+    }
+  },
+
+  createEstimatedIncome: async (req, res) => {
+    try {
+      const count = await EstimatedIncome.countDocuments();
+      const income = await EstimatedIncome.create({
+        ...req.body,
+        order: count
+      });
+      res.status(201).json(income);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to create estimated income' });
+    }
+  },
+
+  updateEstimatedIncome: async (req, res) => {
+    try {
+      const income = await EstimatedIncome.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
       res.json(income);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch estimated income' });
+      res.status(500).json({ message: 'Failed to update estimated income' });
     }
   },
 
-  addIncomeRow: async (req, res) => {
+  deleteEstimatedIncome: async (req, res) => {
     try {
-      const { name, prevAmt, currAmt, category, status, informed, others } = req.body;
-      let income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      if (!income) return res.status(404).json({ message: 'Income data not found' });
-      const newRow = {
-        id: `row_${Date.now()}`,
-        name: name || '',
-        prevAmt: prevAmt || 0,
-        currAmt: currAmt || 0,
-        category: category || 'youth',
-        status: status || 'not paid',
-        informed: informed || 0,
-        others: others || ''
-      };
-      income.rows.push(newRow);
-      await income.save();
-      res.json(income);
+      await EstimatedIncome.findByIdAndDelete(req.params.id);
+      res.json({ message: 'Estimated income deleted successfully' });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to add income row' });
+      res.status(500).json({ message: 'Failed to delete estimated income' });
     }
   },
 
-  updateIncomeRow: async (req, res) => {
+  // Expense Methods
+  getAllEstimatedExpenses: async (req, res) => {
     try {
-      const { rowId } = req.params;
-      const updateData = req.body;
-      let income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      if (!income) return res.status(404).json({ message: 'Income data not found' });
-      const rowIndex = income.rows.findIndex(row => row.id === rowId);
-      if (rowIndex === -1) return res.status(404).json({ message: 'Row not found' });
-      income.rows[rowIndex] = { ...income.rows[rowIndex], ...updateData };
-      await income.save();
-      res.json(income);
+      const expenses = await EstimatedExpense.find().sort({ order: 1 });
+      res.json(expenses);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to update income row' });
+      res.status(500).json({ message: 'Failed to fetch estimated expenses' });
     }
   },
 
-  deleteIncomeRow: async (req, res) => {
+  createEstimatedExpense: async (req, res) => {
     try {
-      const { rowId } = req.params;
-      let income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      if (!income) return res.status(404).json({ message: 'Income data not found' });
-      income.rows = income.rows.filter(row => row.id !== rowId);
-      await income.save();
-      res.json(income);
+      const count = await EstimatedExpense.countDocuments();
+      const expense = await EstimatedExpense.create({
+        ...req.body,
+        order: count
+      });
+      res.status(201).json(expense);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to delete income row' });
+      res.status(500).json({ message: 'Failed to create estimated expense' });
     }
   },
 
-  updateIncomeColumn: async (req, res) => {
+  updateEstimatedExpense: async (req, res) => {
     try {
-      const { columnId } = req.params;
-      const { header } = req.body;
-      let income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      if (!income) return res.status(404).json({ message: 'Income data not found' });
-      const colIndex = income.columns.findIndex(col => col.id === columnId);
-      if (colIndex === -1) return res.status(404).json({ message: 'Column not found' });
-      income.columns[colIndex].header = header;
-      await income.save();
-      res.json(income);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to update income column' });
-    }
-  },
-
-  deleteIncomeColumn: async (req, res) => {
-    try {
-      const { columnId } = req.params;
-      let income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      if (!income) return res.status(404).json({ message: 'Income data not found' });
-      // Prevent deletion of default columns
-      if (['sno', 'name', 'prevAmt', 'currAmt', 'category', 'status', 'informed', 'others'].includes(columnId)) {
-        return res.status(400).json({ message: 'Cannot delete default column' });
-      }
-      income.columns = income.columns.filter(col => col.id !== columnId);
-      await income.save();
-      res.json(income);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to delete income column' });
-    }
-  },
-
-  updateIncomeColumnOrder: async (req, res) => {
-    try {
-      const { columns } = req.body;
-      let income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      if (!income) return res.status(404).json({ message: 'Income data not found' });
-      income.columns = columns;
-      await income.save();
-      res.json(income);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to update income column order' });
-    }
-  },
-
-  // ----- Expense Endpoints -----
-  getEstimatedExpense: async (req, res) => {
-    try {
-      let expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      if (!expense) {
-        expense = new EstimatedExpense({
-          columns: [
-            { id: 'sno', header: 'S.No', type: 'numeric', order: 0 },
-            { id: 'purpose', header: 'Purpose', type: 'string', order: 1 },
-            { id: 'prevAmt', header: 'Previous Year Amount', type: 'amount', order: 2 },
-            { id: 'currAmt', header: 'Current Amount', type: 'amount', order: 3 },
-            { id: 'contact', header: 'Contact', type: 'string', order: 4 },
-            { id: 'others', header: 'Others', type: 'string', order: 5 }
-          ],
-          rows: [],
-          createdBy: req.user.registerId
-        });
-        await expense.save();
-      }
+      const expense = await EstimatedExpense.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
       res.json(expense);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch estimated expense' });
+      res.status(500).json({ message: 'Failed to update estimated expense' });
     }
   },
 
-  addExpenseRow: async (req, res) => {
+  deleteEstimatedExpense: async (req, res) => {
     try {
-      const { purpose, prevAmt, currAmt, contact, others } = req.body;
-      let expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      if (!expense) return res.status(404).json({ message: 'Expense data not found' });
-      const newRow = {
-        id: `row_${Date.now()}`,
-        purpose: purpose || '',
-        prevAmt: prevAmt || 0,
-        currAmt: currAmt || 0,
-        contact: contact || '',
-        others: others || ''
-      };
-      expense.rows.push(newRow);
-      await expense.save();
-      res.json(expense);
+      await EstimatedExpense.findByIdAndDelete(req.params.id);
+      res.json({ message: 'Estimated expense deleted successfully' });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to add expense row' });
+      res.status(500).json({ message: 'Failed to delete estimated expense' });
     }
   },
 
-  updateExpenseRow: async (req, res) => {
+  // Stats Methods
+  getEstimationStats: async (req, res) => {
     try {
-      const { rowId } = req.params;
-      const updateData = req.body;
-      let expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      if (!expense) return res.status(404).json({ message: 'Expense data not found' });
-      const rowIndex = expense.rows.findIndex(row => row.id === rowId);
-      if (rowIndex === -1) return res.status(404).json({ message: 'Row not found' });
-      expense.rows[rowIndex] = { ...expense.rows[rowIndex], ...updateData };
-      await expense.save();
-      res.json(expense);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to update expense row' });
-    }
-  },
+      const incomes = await EstimatedIncome.find();
+      const expenses = await EstimatedExpense.find();
 
-  deleteExpenseRow: async (req, res) => {
-    try {
-      const { rowId } = req.params;
-      let expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      if (!expense) return res.status(404).json({ message: 'Expense data not found' });
-      expense.rows = expense.rows.filter(row => row.id !== rowId);
-      await expense.save();
-      res.json(expense);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to delete expense row' });
-    }
-  },
+      const totalEstimatedIncome = incomes.reduce((sum, income) => sum + income.currentAmount, 0);
+      const totalEstimatedPaidIncome = incomes
+        .filter(income => income.status === 'paid')
+        .reduce((sum, income) => sum + income.currentAmount, 0);
+      const totalEstimatedNotPaidIncome = totalEstimatedIncome - totalEstimatedPaidIncome;
+      
+      const totalEstimatedExpense = expenses.reduce((sum, expense) => sum + expense.currentAmount, 0);
+      const balance = totalEstimatedIncome - totalEstimatedExpense;
 
-  updateExpenseColumn: async (req, res) => {
-    try {
-      const { columnId } = req.params;
-      const { header } = req.body;
-      let expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      if (!expense) return res.status(404).json({ message: 'Expense data not found' });
-      const colIndex = expense.columns.findIndex(col => col.id === columnId);
-      if (colIndex === -1) return res.status(404).json({ message: 'Column not found' });
-      expense.columns[colIndex].header = header;
-      await expense.save();
-      res.json(expense);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to update expense column' });
-    }
-  },
-
-  deleteExpenseColumn: async (req, res) => {
-    try {
-      const { columnId } = req.params;
-      let expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      if (!expense) return res.status(404).json({ message: 'Expense data not found' });
-      if (['sno','purpose','prevAmt','currAmt','contact','others'].includes(columnId)) {
-        return res.status(400).json({ message: 'Cannot delete default column' });
-      }
-      expense.columns = expense.columns.filter(col => col.id !== columnId);
-      await expense.save();
-      res.json(expense);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to delete expense column' });
-    }
-  },
-
-  updateExpenseColumnOrder: async (req, res) => {
-    try {
-      const { columns } = req.body;
-      let expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      if (!expense) return res.status(404).json({ message: 'Expense data not found' });
-      expense.columns = columns;
-      await expense.save();
-      res.json(expense);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to update expense column order' });
-    }
-  },
-
-  // ----- Estimated Stats Endpoint -----
-  getEstimatedStats: async (req, res) => {
-    try {
-      const income = await EstimatedIncome.findOne({ createdBy: req.user.registerId });
-      const expense = await EstimatedExpense.findOne({ createdBy: req.user.registerId });
-      let incomeTotal = 0, paidTotal = 0, notPaidTotal = 0;
-      if (income) {
-        income.rows.forEach(row => {
-          incomeTotal += row.currAmt;
-          if (row.status === 'paid') {
-            paidTotal += row.currAmt;
-          } else {
-            notPaidTotal += row.currAmt;
-          }
-        });
-      }
-      let expenseTotal = 0;
-      if (expense) {
-        expense.rows.forEach(row => {
-          expenseTotal += row.currAmt;
-        });
-      }
-      const balance = incomeTotal - expenseTotal;
       res.json({
-        income: {
-          currentEstimatedIncome: incomeTotal,
-          paid: paidTotal,
-          notPaid: notPaidTotal
-        },
-        expense: {
-          currentEstimatedExpense: expenseTotal
-        },
-        balance: balance
+        totalEstimatedIncome,
+        totalEstimatedPaidIncome,
+        totalEstimatedNotPaidIncome,
+        totalEstimatedExpense,
+        balance
       });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch estimated stats' });
+      res.status(500).json({ message: 'Failed to fetch estimation stats' });
     }
   }
 };
-
-export default estimationController;
