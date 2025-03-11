@@ -11,7 +11,7 @@ const estimatedExpenseSchema = new mongoose.Schema({
   },
   currentAmount: {
     type: Number,
-    required: true
+    default: 0
   },
   contact: {
     type: String,
@@ -21,9 +21,10 @@ const estimatedExpenseSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  order: {
-    type: Number,
-    default: 0
+  EEID: {  // New unique identifier for estimated expense
+    type: String,
+    required: true,
+    unique: true
   }
 }, { timestamps: true });
 

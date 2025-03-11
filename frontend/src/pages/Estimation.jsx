@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Filter } from 'lucide-react';
+import { Edit2, Filter} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { API_URL } from '../utils/config';
 import EstimatedIncomeTable from '../components/estimation/IncomeTable';
 import EstimatedExpenseTable from '../components/estimation/ExpenseTable';
 import EstimationStats from '../components/estimation/Stats';
+import EstimationForm from '../components/estimation/Form';
+import { useAuth } from '../context/AuthContext';
 
 function Estimation() {
   const { user } = useAuth();
-  // Add a "stats" tab along with income and expense
-  const [activeTab, setActiveTab] = useState('stats');
-  const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState('stats'); // Default now is stats
   const [stats, setStats] = useState({
     totalEstimatedIncome: 0,
     totalEstimatedPaidIncome: 0,
@@ -41,6 +40,10 @@ function Estimation() {
 
   // Expense state
   const [expenses, setExpenses] = useState([]);
+  const [expenseFilters, setExpenseFilters] = useState({
+    sortField: 'currentAmount',
+    sortOrder: 'desc'
+  });
   const [expenseColumns, setExpenseColumns] = useState({
     sno: true,
     purpose: true,
@@ -50,24 +53,32 @@ function Estimation() {
     others: false
   });
 
+  // Form modal state
+  const [showForm, setShowForm] = useState(false);
+  const [formMode, setFormMode] = useState('add'); // 'add' or 'edit'
+  const [formType, setFormType] = useState('income'); // 'income' or 'expense'
+  const [currentRecord, setCurrentRecord] = useState(null);
+
   useEffect(() => {
     fetchData();
-  }, [activeTab, incomeFilters]);
+  }, [activeTab, incomeFilters, expenseFilters]);
 
   const fetchData = async () => {
     try {
-      // Always fetch stats (needed in the stats tab)
+      // Fetch stats
       const statsResponse = await axios.get(`${API_URL}/api/estimation/stats`);
       setStats(statsResponse.data);
 
-      // Fetch income or expense only if that tab is active
+      // Fetch data based on active tab
       if (activeTab === 'income') {
         const { data } = await axios.get(`${API_URL}/api/estimation/income`, {
           params: incomeFilters
         });
         setIncomes(data);
       } else if (activeTab === 'expense') {
-        const { data } = await axios.get(`${API_URL}/api/estimation/expense`);
+        const { data } = await axios.get(`${API_URL}/api/estimation/expense`, {
+          params: expenseFilters
+        });
         setExpenses(data);
       }
     } catch (error) {
@@ -75,32 +86,7 @@ function Estimation() {
     }
   };
 
-  // (Handlers for income and expense add/update/delete remain unchanged)
-  const handleIncomeAdd = async () => {
-    try {
-      const { data } = await axios.post(`${API_URL}/api/estimation/income`, {
-        name: 'New Income',
-        currentAmount: 0,
-        category: 'youth',
-        status: 'not paid',
-        c
-      });
-      setIncomes([...incomes, data]);
-    } catch (error) {
-      toast.error('Failed to add income');
-    }
-  };
-
-  const handleIncomeUpdate = async (id, updates) => {
-    try {
-      const { data } = await axios.put(`${API_URL}/api/estimation/income/${id}`, updates);
-      setIncomes(incomes.map(income => income._id === id ? data : income));
-      fetchData(); // Refresh stats
-    } catch (error) {
-      toast.error('Failed to update income');
-    }
-  };
-
+  // Income Delete Handler
   const handleIncomeDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/api/estimation/income/${id}`);
@@ -111,28 +97,7 @@ function Estimation() {
     }
   };
 
-  const handleExpenseAdd = async () => {
-    try {
-      const { data } = await axios.post(`${API_URL}/api/estimation/expense`, {
-        purpose: 'New Expense',
-        currentAmount: 0
-      });
-      setExpenses([...expenses, data]);
-    } catch (error) {
-      toast.error('Failed to add expense');
-    }
-  };
-
-  const handleExpenseUpdate = async (id, updates) => {
-    try {
-      const { data } = await axios.put(`${API_URL}/api/estimation/expense/${id}`, updates);
-      setExpenses(expenses.map(expense => expense._id === id ? data : expense));
-      fetchData(); // Refresh stats
-    } catch (error) {
-      toast.error('Failed to update expense');
-    }
-  };
-
+  // Expense Delete Handler
   const handleExpenseDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/api/estimation/expense/${id}`);
@@ -143,11 +108,61 @@ function Estimation() {
     }
   };
 
-  const handleSort = (field) => {
+  // Handler for opening form modal for add
+  const handleAdd = (type) => {
+    setFormMode('add');
+    setFormType(type);
+    setCurrentRecord(null);
+    setShowForm(true);
+  };
+
+  // Handler for opening form modal for edit
+  const handleEdit = (type, record) => {
+    setFormMode('edit');
+    setFormType(type);
+    setCurrentRecord(record);
+    setShowForm(true);
+  };
+
+  // Handler for form submit (add or edit)
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (formMode === 'add') {
+        if (formType === 'income') {
+          const { data } = await axios.post(`${API_URL}/api/estimation/income`, formData);
+          setIncomes([...incomes, data]);
+        } else if (formType === 'expense') {
+          const { data } = await axios.post(`${API_URL}/api/estimation/expense`, formData);
+          setExpenses([...expenses, data]);
+        }
+      } else if (formMode === 'edit') {
+        if (formType === 'income') {
+          const { data } = await axios.put(`${API_URL}/api/estimation/income/${currentRecord._id}`, formData);
+          setIncomes(incomes.map(income => income._id === currentRecord._id ? data : income));
+        } else if (formType === 'expense') {
+          const { data } = await axios.put(`${API_URL}/api/estimation/expense/${currentRecord._id}`, formData);
+          setExpenses(expenses.map(expense => expense._id === currentRecord._id ? data : expense));
+        }
+      }
+      setShowForm(false);
+      fetchData(); // Refresh stats and data
+    } catch (error) {
+      toast.error('Failed to submit form');
+    }
+  };
+
+  // Sorting handlers for income and expense
+  const toggleIncomeSort = () => {
     setIncomeFilters(prev => ({
       ...prev,
-      sortField: field,
-      sortOrder: prev.sortField === field && prev.sortOrder === 'asc' ? 'desc' : 'asc'
+      sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const toggleExpenseSort = () => {
+    setExpenseFilters(prev => ({
+      ...prev,
+      sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc'
     }));
   };
 
@@ -157,6 +172,7 @@ function Estimation() {
 
   return (
     <div className="space-y-6">
+      {/* Tab Buttons */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Estimation Management</h1>
         <div className="space-x-2">
@@ -190,17 +206,10 @@ function Estimation() {
           >
             Expense
           </button>
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className={`px-4 py-2 rounded-md ${
-              isEditing ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'
-            }`}
-          >
-            {isEditing ? 'Done' : 'Edit'}
-          </button>
         </div>
       </div>
 
+      {/* Render Content Based on Active Tab */}
       {activeTab === 'stats' && (
         <EstimationStats stats={stats} />
       )}
@@ -214,7 +223,7 @@ function Estimation() {
               onChange={(e) => setIncomeFilters({ ...incomeFilters, status: e.target.value })}
               className="form-select"
             >
-              <option value="">All Status</option>
+              <option value="">Status</option>
               <option value="paid">Paid</option>
               <option value="not paid">Not Paid</option>
             </select>
@@ -223,10 +232,21 @@ function Estimation() {
               onChange={(e) => setIncomeFilters({ ...incomeFilters, belongsTo: e.target.value })}
               className="form-select"
             >
-              <option value="">All Categories</option>
+              <option value="">Belongs To</option>
               <option value="youth">Youth</option>
               <option value="villagers">Villagers</option>
             </select>
+            <select
+  value={incomeFilters.sortOrder || ""}
+  onChange={(e) => setIncomeFilters({ ...incomeFilters, sortOrder: e.target.value })}
+  className="form-select"
+>
+  <option value="">Sort</option>
+  <option value="asc">Ascending</option>
+  <option value="desc">Descending</option>
+</select>
+
+
           </div>
 
           <div className="bg-white rounded-lg shadow">
@@ -250,9 +270,8 @@ function Estimation() {
             <EstimatedIncomeTable
               incomes={incomes}
               visibleColumns={incomeColumns}
-              isEditing={isEditing}
-              onAdd={handleIncomeAdd}
-              onUpdate={handleIncomeUpdate}
+              onAdd={() => handleAdd('income')}
+              onEdit={(record) => handleEdit('income', record)}
               onDelete={handleIncomeDelete}
             />
           </div>
@@ -261,6 +280,18 @@ function Estimation() {
 
       {activeTab === 'expense' && (
         <div className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <Filter className="h-5 w-5 text-gray-400" />
+            <select
+  value={incomeFilters.sortOrder}
+  onChange={(e) => setIncomeFilters({ ...incomeFilters, sortOrder: e.target.value })}
+  className="form-select"
+> <option value="">Sort</option>
+  <option value="desc">Descending</option>
+  <option value="asc">Ascending</option>
+</select>
+          </div>
+
           <div className="bg-white rounded-lg shadow">
             <div className="p-4 border-b">
               <h2 className="font-medium">Visible Columns</h2>
@@ -282,13 +313,23 @@ function Estimation() {
             <EstimatedExpenseTable
               expenses={expenses}
               visibleColumns={expenseColumns}
-              isEditing={isEditing}
-              onAdd={handleExpenseAdd}
-              onUpdate={handleExpenseUpdate}
+              onAdd={() => handleAdd('expense')}
+              onEdit={(record) => handleEdit('expense', record)}
               onDelete={handleExpenseDelete}
             />
           </div>
         </div>
+      )}
+
+      {/* Modal Form for Add/Edit */}
+      {showForm && (
+        <EstimationForm
+          type={formType}
+          mode={formMode}
+          data={currentRecord}
+          onSubmit={handleFormSubmit}
+          onClose={() => setShowForm(false)}
+        />
       )}
     </div>
   );

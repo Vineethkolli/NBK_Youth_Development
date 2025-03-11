@@ -11,7 +11,7 @@ const estimatedIncomeSchema = new mongoose.Schema({
   },
   currentAmount: {
     type: Number,
-    required: true
+    default: 0
   },
   category: {
     type: String,
@@ -27,9 +27,10 @@ const estimatedIncomeSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  order: {
-    type: Number,
-    default: 0
+  EIID: {  // New unique identifier for estimated income
+    type: String,
+    required: true,
+    unique: true
   }
 }, { timestamps: true });
 

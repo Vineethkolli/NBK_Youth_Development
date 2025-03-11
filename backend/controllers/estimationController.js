@@ -13,7 +13,7 @@ export const estimationController = {
         sortObj[sortField] = sortOrder === 'desc' ? -1 : 1;
         query = query.sort(sortObj);
       } else {
-        query = query.sort({ order: 1 });
+        query = query.sort({ EIID: 1 });
       }
 
       const incomes = await query.exec();
@@ -28,10 +28,12 @@ export const estimationController = {
       const count = await EstimatedIncome.countDocuments();
       const income = await EstimatedIncome.create({
         ...req.body,
-        order: count
+        EIID: "EI" + (count + 1)
       });
       res.status(201).json(income);
     } catch (error) {
+      
+    console.error('Error creating income:', error); // Log error details
       res.status(500).json({ message: 'Failed to create estimated income' });
     }
   },
@@ -61,7 +63,7 @@ export const estimationController = {
   // Expense Methods
   getAllEstimatedExpenses: async (req, res) => {
     try {
-      const expenses = await EstimatedExpense.find().sort({ order: 1 });
+      const expenses = await EstimatedExpense.find().sort({ EEID: 1 });
       res.json(expenses);
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch estimated expenses' });
@@ -73,7 +75,7 @@ export const estimationController = {
       const count = await EstimatedExpense.countDocuments();
       const expense = await EstimatedExpense.create({
         ...req.body,
-        order: count
+        EEID: "EE" + (count + 1)
       });
       res.status(201).json(expense);
     } catch (error) {
