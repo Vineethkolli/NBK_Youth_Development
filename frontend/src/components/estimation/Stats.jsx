@@ -26,50 +26,54 @@ function EstimationStats({ stats }) {
     <div className="space-y-6">
       {/* Section 1: Estimated Income and Expense */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-medium flex items-center">
-              <IndianRupee className="h-5 w-5 mr-2" />
-              Estimated Income
-            </h2>
-            <p className="mt-4 text-2xl font-bold text-green-600">
-              {formatAmount(stats.totalEstimatedIncome)}
-            </p>
-          </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-2 flex items-center">
+            Estimated Income
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            {stats.incomeCount || 0} entries
+          </p>
+          <p className="text-lg font-bold text-green-600">
+            {formatAmount(stats.totalEstimatedIncome)}
+          </p>
+          
         </div>
-        <div className="bg-white rounded-lg shadow p-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-medium flex items-center">
-              <IndianRupee className="h-5 w-5 mr-2" />
-              Estimated Expense
-            </h2>
-            <p className="mt-4 text-2xl font-bold text-red-600">
-              {formatAmount(stats.totalEstimatedExpense)}
-            </p>
-          </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-2 flex items-center">
+            Estimated Expense
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            {stats.expenseCount || 0} entries 
+          </p>
+          <p className="text-lg font-bold text-red-600">
+            {formatAmount(stats.totalEstimatedExpense)}
+          </p>
         </div>
       </div>
 
       {/* Section 2: Amount Left / Shortage */}
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-medium">Amount Left</h2>
-        <div className="mt-4">
-          <p className={`text-2xl font-bold ${isShortage ? 'text-red-600' : 'text-green-600'}`}>
+        <h2 className="text-xl font-semibold mb-2">Amount Left</h2>
+        <div className="flex items-center">
+          <p className={`text-lg font-bold ${isShortage ? 'text-red-600' : 'text-green-600'}`}>
             {formatAmount(stats.balance)}
           </p>
-          <p className="text-sm text-gray-600">
-            {isShortage ? 'Shortage' : ''}
-          </p>
+          {isShortage && (
+            <p className="ml-2 text-red-500 font-semibold">(Shortage)</p>
+          )}
         </div>
       </div>
 
       {/* Section 3: Youth and Villagers */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium flex items-center justify-between">
+          <h2 className="text-xl font-semibold mb-2 flex items-center justify-between">
             <span>Youth</span>
             <span className="text-lg font-bold">{formatAmount(youthTotal)}</span>
           </h2>
+          <p className="text-sm text-gray-600">
+            {stats.youthCount || 0} entries
+          </p>
           <div className="mt-4">
             <p className="text-sm text-gray-600">
               Paid: <span className="font-bold">{formatAmount(youthPaid)}</span>
@@ -80,10 +84,13 @@ function EstimationStats({ stats }) {
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium flex items-center justify-between">
+          <h2 className="text-xl font-semibold mb-2 flex items-center justify-between">
             <span>Villagers</span>
             <span className="text-lg font-bold">{formatAmount(villagersTotal)}</span>
           </h2>
+          <p className="text-sm text-gray-600">
+            {stats.villagersCount || 0} entries
+          </p>
           <div className="mt-4">
             <p className="text-sm text-gray-600">
               Paid: <span className="font-bold">{formatAmount(villagersPaid)}</span>
