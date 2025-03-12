@@ -34,7 +34,6 @@ function Estimation() {
     }
   };
 
-
   return (
     <div className="space-y-6">
       {/* Tab Buttons */}
@@ -51,26 +50,31 @@ function Estimation() {
           >
             Stats
           </button>
-          <button
-            onClick={() => setActiveTab('income')}
-            className={`px-4 py-2 rounded-md ${
-              activeTab === 'income'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-200 text-gray-700'
-            }`}
-          >
-            Income
-          </button>
-          <button
-            onClick={() => setActiveTab('expense')}
-            className={`px-4 py-2 rounded-md ${
-              activeTab === 'expense'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-200 text-gray-700'
-            }`}
-          >
-            Expense
-          </button>
+          {/* Render Income and Expense buttons only if the user's role is not "user" */}
+          {user?.role !== 'user' && (
+            <>
+              <button
+                onClick={() => setActiveTab('income')}
+                className={`px-4 py-2 rounded-md ${
+                  activeTab === 'income'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Income
+              </button>
+              <button
+                onClick={() => setActiveTab('expense')}
+                className={`px-4 py-2 rounded-md ${
+                  activeTab === 'expense'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Expense
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -79,11 +83,11 @@ function Estimation() {
         <EstimationStats stats={stats} />
       )}
 
-      {activeTab === 'income' && (
+      {activeTab === 'income' && user?.role !== 'user' && (
         <IncomeSection refreshStats={fetchStats} />
       )}
 
-      {activeTab === 'expense' && (
+      {activeTab === 'expense' && user?.role !== 'user' && (
         <ExpenseSection refreshStats={fetchStats} />
       )}
     </div>
