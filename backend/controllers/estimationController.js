@@ -126,30 +126,52 @@ export const estimationController = {
       res.status(500).json({ message: 'Failed to delete estimated expense' });
     }
   },
-
+  
   getEstimationStats: async (req, res) => {
     try {
       const incomes = await EstimatedIncome.find();
       const expenses = await EstimatedExpense.find();
-
+  
       const totalEstimatedIncome = incomes.reduce((sum, income) => sum + income.presentAmount, 0);
       const totalEstimatedPaidIncome = incomes
         .filter(income => income.status === 'paid')
         .reduce((sum, income) => sum + income.presentAmount, 0);
       const totalEstimatedNotPaidIncome = totalEstimatedIncome - totalEstimatedPaidIncome;
-      
+  
       const totalEstimatedExpense = expenses.reduce((sum, expense) => sum + expense.presentAmount, 0);
       const balance = totalEstimatedIncome - totalEstimatedExpense;
-
+  
+      // Compute Youth totals (using belongsTo: 'youth')
+      const youthIncomes = incomes.filter(income => income.belongsTo === 'youth');
+      const youthPaid = youthIncomes
+        .filter(income => income.status === 'paid')
+        .reduce((sum, income) => sum + income.presentAmount, 0);
+      const youthNotPaid = youthIncomes
+        .filter(income => income.status !== 'paid')
+        .reduce((sum, income) => sum + income.presentAmount, 0);
+  
+      // Compute Villagers totals (using belongsTo: 'villagers')
+      const villagersIncomes = incomes.filter(income => income.belongsTo === 'villagers');
+      const villagersPaid = villagersIncomes
+        .filter(income => income.status === 'paid')
+        .reduce((sum, income) => sum + income.presentAmount, 0);
+      const villagersNotPaid = villagersIncomes
+        .filter(income => income.status !== 'paid')
+        .reduce((sum, income) => sum + income.presentAmount, 0);
+  
       res.json({
         totalEstimatedIncome,
         totalEstimatedPaidIncome,
         totalEstimatedNotPaidIncome,
         totalEstimatedExpense,
-        balance
+        balance,
+        youthPaid,
+        youthNotPaid,
+        villagersPaid,
+        villagersNotPaid
       });
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch estimation stats' });
     }
-  }
+  }  
 };

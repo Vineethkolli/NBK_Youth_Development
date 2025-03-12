@@ -56,7 +56,7 @@ function EstimatedIncomeTable({
           {incomes.map((income, index) => (
             <tr key={income._id}>
               {visibleColumns.sno && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm notranslate">
                   {index + 1}
                 </td>
               )}
@@ -66,12 +66,12 @@ function EstimatedIncomeTable({
                 </td>
               )}
               {visibleColumns.previousAmount && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm notranslate">
                   {income.previousAmount}
                 </td>
               )}
               {visibleColumns.presentAmount && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm notranslate">
                   {income.presentAmount}
                 </td>
               )}

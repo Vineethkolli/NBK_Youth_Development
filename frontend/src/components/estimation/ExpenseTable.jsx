@@ -45,7 +45,7 @@ function EstimatedExpenseTable({
           {expenses.map((expense, index) => (
             <tr key={expense._id}>
               {visibleColumns.sno && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm notranslate">
                   {index + 1}
                 </td>
               )}
@@ -55,12 +55,12 @@ function EstimatedExpenseTable({
                 </td>
               )}
               {visibleColumns.previousAmount && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm notranslate">
                   {expense.previousAmount}
                 </td>
               )}
               {visibleColumns.presentAmount && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm notranslate">
                   {expense.presentAmount}
                 </td>
               )}
