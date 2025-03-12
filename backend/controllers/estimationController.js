@@ -126,61 +126,75 @@ export const estimationController = {
       res.status(500).json({ message: 'Failed to delete estimated expense' });
     }
   },
-  getEstimationStats: async (req, res) => {
-    try {
-      const incomes = await EstimatedIncome.find();
-      const expenses = await EstimatedExpense.find();
-  
-      const totalEstimatedIncome = incomes.reduce((sum, income) => sum + income.presentAmount, 0);
-      const totalEstimatedPaidIncome = incomes
-        .filter(income => income.status === 'paid')
-        .reduce((sum, income) => sum + income.presentAmount, 0);
-      const totalEstimatedNotPaidIncome = totalEstimatedIncome - totalEstimatedPaidIncome;
-  
-      const totalEstimatedExpense = expenses.reduce((sum, expense) => sum + expense.presentAmount, 0);
-      const balance = totalEstimatedIncome - totalEstimatedExpense;
-  
-      // Calculate entry counts
-      const incomeCount = incomes.length;
-      const expenseCount = expenses.length;
-  
-      // Compute Youth totals (using belongsTo: 'youth')
-      const youthIncomes = incomes.filter(income => income.belongsTo === 'youth');
-      const youthPaid = youthIncomes
-        .filter(income => income.status === 'paid')
-        .reduce((sum, income) => sum + income.presentAmount, 0);
-      const youthNotPaid = youthIncomes
-        .filter(income => income.status !== 'paid')
-        .reduce((sum, income) => sum + income.presentAmount, 0);
-      const youthCount = youthIncomes.length;
-  
-      // Compute Villagers totals (using belongsTo: 'villagers')
-      const villagersIncomes = incomes.filter(income => income.belongsTo === 'villagers');
-      const villagersPaid = villagersIncomes
-        .filter(income => income.status === 'paid')
-        .reduce((sum, income) => sum + income.presentAmount, 0);
-      const villagersNotPaid = villagersIncomes
-        .filter(income => income.status !== 'paid')
-        .reduce((sum, income) => sum + income.presentAmount, 0);
-      const villagersCount = villagersIncomes.length;
-  
-      res.json({
-        totalEstimatedIncome,
-        totalEstimatedPaidIncome,
-        totalEstimatedNotPaidIncome,
-        totalEstimatedExpense,
-        balance,
-        incomeCount,
-        expenseCount,
-        youthPaid,
-        youthNotPaid,
-        youthCount,
-        villagersPaid,
-        villagersNotPaid,
-        villagersCount
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch estimation stats' });
-    }
+
+getEstimationStats: async (req, res) => {
+  try {
+    const incomes = await EstimatedIncome.find();
+    const expenses = await EstimatedExpense.find();
+
+    const totalEstimatedIncome = incomes.reduce((sum, income) => sum + income.presentAmount, 0);
+    const totalEstimatedPaidIncome = incomes
+      .filter(income => income.status === 'paid')
+      .reduce((sum, income) => sum + income.presentAmount, 0);
+    const totalEstimatedNotPaidIncome = totalEstimatedIncome - totalEstimatedPaidIncome;
+
+    const totalEstimatedExpense = expenses.reduce((sum, expense) => sum + expense.presentAmount, 0);
+    const balance = totalEstimatedIncome - totalEstimatedExpense;
+
+    // Calculate overall entry counts
+    const incomeCount = incomes.length;
+    const expenseCount = expenses.length;
+    const overallPaidCount = incomes.filter(income => income.status === 'paid').length;
+    const overallNotPaidCount = incomes.filter(income => income.status !== 'paid').length;
+
+    // Compute Youth totals (using belongsTo: 'youth')
+    const youthIncomes = incomes.filter(income => income.belongsTo === 'youth');
+    const youthPaid = youthIncomes
+      .filter(income => income.status === 'paid')
+      .reduce((sum, income) => sum + income.presentAmount, 0);
+    const youthNotPaid = youthIncomes
+      .filter(income => income.status !== 'paid')
+      .reduce((sum, income) => sum + income.presentAmount, 0);
+    const youthCount = youthIncomes.length;
+    const youthPaidCount = youthIncomes.filter(income => income.status === 'paid').length;
+    const youthNotPaidCount = youthIncomes.filter(income => income.status !== 'paid').length;
+
+    // Compute Villagers totals (using belongsTo: 'villagers')
+    const villagersIncomes = incomes.filter(income => income.belongsTo === 'villagers');
+    const villagersPaid = villagersIncomes
+      .filter(income => income.status === 'paid')
+      .reduce((sum, income) => sum + income.presentAmount, 0);
+    const villagersNotPaid = villagersIncomes
+      .filter(income => income.status !== 'paid')
+      .reduce((sum, income) => sum + income.presentAmount, 0);
+    const villagersCount = villagersIncomes.length;
+    const villagersPaidCount = villagersIncomes.filter(income => income.status === 'paid').length;
+    const villagersNotPaidCount = villagersIncomes.filter(income => income.status !== 'paid').length;
+
+    res.json({
+      totalEstimatedIncome,
+      totalEstimatedPaidIncome,
+      totalEstimatedNotPaidIncome,
+      totalEstimatedExpense,
+      balance,
+      incomeCount,
+      expenseCount,
+      overallPaidCount,
+      overallNotPaidCount,
+      youthPaid,
+      youthNotPaid,
+      youthCount,
+      youthPaidCount,
+      youthNotPaidCount,
+      villagersPaid,
+      villagersNotPaid,
+      villagersCount,
+      villagersPaidCount,
+      villagersNotPaidCount
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch estimation stats' });
   }
+}
+
 };  
