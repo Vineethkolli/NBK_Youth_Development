@@ -1,29 +1,9 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Github as LucideGithub } from "lucide-react";
-import { FaWhatsapp, FaCode, FaCopy, FaShareAlt, FaRobot } from "react-icons/fa";
-import {
-  SiVercel,
-  SiRender,
-  SiMongodb,
-  SiGmail,
-  SiCloudinary,
-  SiReact,
-  SiTailwindcss,
-  SiVite,
-  SiNodedotjs,
-  SiExpress,
-  SiGit,
-  SiGithub,
-  SiGoogletranslate,
-  SiGoogledrive,
-  SiPostman,
-  SiGoogle,
-  SiOpenai,
-  SiYoutube,
-  SiGithubcopilot,
-  SiInstagram
-} from "react-icons/si";
+import { FaWhatsapp, FaCode, FaShareAlt, FaRobot } from "react-icons/fa";
+import {SiVercel, SiRender, SiMongodb, SiGmail, SiCloudinary, SiReact, SiTailwindcss, SiVite, SiNodedotjs, SiExpress,
+        SiGit, SiGithub, SiGoogletranslate, SiGoogledrive, SiPostman, SiGoogle, SiOpenai, SiYoutube, SiGithubcopilot, SiInstagram } from "react-icons/si";
 import Footer from '../components/Footer';
 
 function TechStack() {
