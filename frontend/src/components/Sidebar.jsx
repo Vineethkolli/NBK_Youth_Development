@@ -42,7 +42,12 @@ function Sidebar({ isOpen, onNavigate }) {
   };
 
   return (
-    <div className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white shadow-lg transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-10 overflow-y-auto`}>
+    <div
+  className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white shadow-lg transition-transform duration-300 ease-in-out transform ${
+    isOpen ? 'translate-x-0' : '-translate-x-full'
+  } md:translate-x-0 z-10 overflow-y-auto`}
+  style={{ WebkitOverflowScrolling: 'touch' }}
+>
       <div className="w-60 h-full flex flex-col">
         <nav className="flex-1 px-2 py-4 space-y-1">
           {links.map((link, index) => {
