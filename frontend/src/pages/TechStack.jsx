@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Github as LucideGithub } from "lucide-react";
 import { FaWhatsapp, FaCode, FaCopy, FaShareAlt, FaRobot } from "react-icons/fa";
-
 import {
   SiVercel,
   SiRender,
@@ -25,6 +24,7 @@ import {
   SiGithubcopilot,
   SiInstagram
 } from "react-icons/si";
+import Footer from '../components/Footer';
 
 function TechStack() {
   const [websites] = useState([
@@ -162,7 +162,7 @@ function TechStack() {
   <div className="flex flex-col md:flex-row items-center justify-between mb-16">
     {/* Social Media Section */}
     <div className="mb-4">
-      <span className="block font-semibold text-gray-300">Follow us</span>
+      <span className="block font-semibold text-gray-400">Follow us</span>
       <div className="flex items-center space-x-4 mt-2">
         <SiYoutube
           className="cursor-pointer h-6 w-6 text-red-500"
@@ -186,7 +186,7 @@ function TechStack() {
       {websites.map((site) => (
         <div
           key={site.name}
-          className="flex items-center justify-between text-gray-600 hover:text-indigo-600"
+          className="flex items-center justify-between text-gray-700 hover:text-indigo-600"
         >
           <span>
             {site.isGitHub ? (
@@ -310,6 +310,8 @@ function TechStack() {
           ))}
         </ul>
       </section>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
