@@ -120,8 +120,8 @@ function TechStack() {
     if (navigator.share) {
       navigator
         .share({
-          title: "NBK Youth GangaVaram",
-          text: "NBK Youth GangaVaram",
+          title: "NBK Youth Gangavaram",
+          text: "NBK Youth Gangavaram",
           url,
         })
         .catch((error) => console.log("Error sharing", error));
