@@ -121,6 +121,7 @@ function TechStack() {
       navigator
         .share({
           title: "NBK Youth GangaVaram",
+          text: "NBK Youth GangaVaram",
           url,
         })
         .catch((error) => console.log("Error sharing", error));
