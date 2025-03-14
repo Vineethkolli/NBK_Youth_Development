@@ -5,6 +5,7 @@ import axios from 'axios';
 import { API_URL } from '../../utils/config';
 import EstimatedIncomeTable from './IncomeTable';
 import EstimationForm from './Form';
+import IncomePrint from './IncomePrint'; // Import IncomePrint component
 
 function IncomeSection({ refreshStats }) {
   const [incomes, setIncomes] = useState([]);
@@ -83,7 +84,6 @@ function IncomeSection({ refreshStats }) {
       fetchIncomes();
       if (refreshStats) refreshStats();
     } catch (error) {
-      // Check if error response has a custom message (like duplicate name)
       if (error.response && error.response.data && error.response.data.message) {
         toast.error(error.response.data.message);
       } else {
@@ -96,13 +96,17 @@ function IncomeSection({ refreshStats }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-            {/* ADD NEW button with Plus icon */}
-        <button onClick={handleAdd} className="btn-primary">
-          <Plus className="h-4 w-4 mr-2" />
-          Add New
-        </button>
+          <button onClick={handleAdd} className="btn-primary">
+            <Plus className="h-4 w-4 mr-2" />
+            Add New
+          </button>
+          {/* Print button to generate PDF using dynamic visible columns, filters, and sorted data */}
+          <IncomePrint 
+            incomes={incomes} 
+            visibleColumns={incomeColumns} 
+            incomeFilters={incomeFilters} 
+          />
           <Filter className="h-5 w-5 text-gray-400" />
-          
           <select
             value={incomeFilters.sortOrder}
             onChange={(e) => setIncomeFilters({ ...incomeFilters, sortOrder: e.target.value })}
@@ -131,8 +135,6 @@ function IncomeSection({ refreshStats }) {
             <option value="not paid">Not Paid</option>
           </select>
         </div>
-        
-      
       </div>
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b">
