@@ -27,12 +27,15 @@ function DashboardLayout() {
   return (
     <div className="flex h-screen bg-gray-100">
           
-      {/* Overlay Install Prompt */}
+      
       <InstallApp />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={sidebarOpen} onNavigate={closeSidebar} />
-      <main className="flex-1 overflow-auto p-8 mt-12 md:ml-64 pb-20"
-      style={{ WebkitOverflowScrolling: 'touch' }}>
+      <main
+  className="flex-1 overflow-auto p-8 mt-12 md:ml-64 pb-20 min-h-[calc(100vh-3rem)]"
+  style={{ WebkitOverflowScrolling: 'touch' }}
+>
+
         <Outlet />
       </main>
 
