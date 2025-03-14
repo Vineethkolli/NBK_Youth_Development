@@ -28,7 +28,6 @@ function DashboardLayout() {
     <div className="flex h-screen bg-gray-100">
           
       
-      <InstallApp />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={sidebarOpen} onNavigate={closeSidebar} />
       <main
