@@ -78,9 +78,9 @@ const IncomePrint = ({ incomes, visibleColumns, incomeFilters }) => {
   };
 
   return (
-    <button onClick={generatePDF} className="btn-secondary">
-      <Printer className="h-4 w-4 mr-2" />
-      Print
+    <button onClick={generatePDF} className="btn-secondary flex items-center space-x-2">
+      <Printer className="h-4 w-4" />
+      <span>Print</span>
     </button>
   );
 };
