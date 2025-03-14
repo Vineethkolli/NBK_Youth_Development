@@ -44,7 +44,7 @@ function InstallApp() {
       sessionStorage.setItem('installPromptShown', 'true');
       timer = setTimeout(() => {
         setShowInstallPrompt(false);
-      }, 3000);
+      }, 4000);
     }
 
     const onAppInstalled = () => {
