@@ -3,7 +3,8 @@ Designed and Developed by KOLLI VINEETH
 Started on OCT 2024
 
 DIRECTORY STRUCTURE
-
+|   
+|   
 +---backend
 |   |   .env
 |   |   .gitignore
@@ -149,12 +150,15 @@ DIRECTORY STRUCTURE
         |   |       PaymentDetails.jsx
         |   |       
         |   +---estimation
+        |   |       ExpensePrint.jsx
         |   |       ExpenseSection.jsx
         |   |       ExpenseTable.jsx
         |   |       Form.jsx
+        |   |       IncomePrint.jsx
         |   |       IncomeSection.jsx
         |   |       IncomeTable.jsx
         |   |       Stats.jsx
+        |   |       StatsPrint.jsx
         |   |       
         |   +---expense
         |   |       ExpenseFilters.jsx
@@ -261,6 +265,5 @@ DIRECTORY STRUCTURE
                 songQueue.js
                 vapidKeys.js
                 
-
 
 tree /F /A  > directory_structure.txt
