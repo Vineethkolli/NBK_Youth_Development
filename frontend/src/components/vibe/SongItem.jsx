@@ -3,8 +3,8 @@ import { Edit2, Trash2, Play, Pause } from 'lucide-react';
 function SongItem({ song, isPlaying, onPlay, onEdit, onDelete, isEditMode }) {
   return (
     <div
-      className={`p-4 rounded-lg cursor-pointer transition-colors flex justify-between items-center ${
-        isPlaying ? 'bg-indigo-100' : 'bg-white hover:bg-gray-100'
+      className={`p-4 rounded-lg cursor-pointer transition-colors flex justify-between items-center notranslate ${
+        isPlaying ? 'bg-indigo-100 ' : 'bg-white hover:bg-gray-100 '
       }`}
     >
       <div 
@@ -12,7 +12,7 @@ function SongItem({ song, isPlaying, onPlay, onEdit, onDelete, isEditMode }) {
         onClick={() => !isEditMode && onPlay(song)}
       >
         {isPlaying ? (
-          <Pause className="h-4 w-4 mr-2 text-indigo-600" />
+          <Pause className="h-4 w-4 mr-2 text-indigo-600 " />
         ) : (
           <Play className="h-4 w-4 mr-2" />
         )}

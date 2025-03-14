@@ -30,7 +30,7 @@ function Home() {
   return (
     <div className="relative">
       {/* Overlay Install Prompt */}
-      <InstallApp />
+    
 
       {/* Home component */}
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-0 space-y-8">
