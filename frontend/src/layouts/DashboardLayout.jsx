@@ -26,8 +26,8 @@ function DashboardLayout() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-          
-      
+      {/* Overlay Install Prompt */}
+      <InstallApp />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={sidebarOpen} onNavigate={closeSidebar} />
       <main

@@ -28,10 +28,7 @@ function Home() {
   };
 
   return (
-    <div className="relative">
-      {/* Overlay Install Prompt */}
-      <InstallApp />
-
+    <div>
       {/* Home component */}
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-0 space-y-8">
         {['developer', 'financier', 'admin'].includes(user?.role) && (
