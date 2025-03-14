@@ -4,6 +4,7 @@ import { Menu, Home, BarChart2, IndianRupee, DollarSign, Wallet } from 'lucide-r
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import InstallApp from '../components/home/InstallApp';
+
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [budgetOpen, setBudgetOpen] = useState(false);
