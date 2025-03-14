@@ -121,7 +121,6 @@ function TechStack() {
       navigator
         .share({
           title: "NBK Youth GangaVaram",
-          text: "Install the new Awesome all-in-one Web App",
           url,
         })
         .catch((error) => console.log("Error sharing", error));
