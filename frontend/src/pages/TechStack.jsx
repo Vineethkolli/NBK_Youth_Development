@@ -71,7 +71,7 @@ function TechStack() {
     },
   ];
 
-  // Split technologies into separate categories
+
   const frontendTech = [
     { name: "React", icon: <SiReact className="h-8 w-8 mr-2 text-blue-500" /> },
     { name: "Tailwind CSS", icon: <SiTailwindcss className="h-8 w-8 mr-2 text-teal-500" /> },
@@ -105,7 +105,6 @@ function TechStack() {
     { category: "Tools", items: tools },
   ];
 
-  // New sources with icons
   const sources = [
     { name: "Google", icon: <SiGoogle className="h-8 w-8 mr-2 text-blue-500" /> },
     { name: "YouTube", icon: <SiYoutube className="h-8 w-8 mr-2 text-red-500" /> },
@@ -192,7 +191,6 @@ function TechStack() {
               alt="Developer"
               className="mx-auto rounded-full border-4 border-indigo-500 shadow-lg transform transition duration-500 hover:scale-105"
             />
-            {/* Animated dashed border overlay */}
             <div className="absolute inset-0 rounded-full border-4 border-dashed border-indigo-300 animate-pulse"></div>
           </div>
           <p className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-extrabold text-2xl">
@@ -201,7 +199,7 @@ function TechStack() {
         </div>
       </div>
 
-      {/* Mottos Section */}
+      {/* Principles Section */}
       <section className="mb-16">
         <h2 className="text-2xl font-semibold text-gray-900 mb-8">Principles</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -218,7 +216,7 @@ function TechStack() {
         </div>
       </section>
 
-      {/* Infrastructure Section */}
+      {/* Platforms Section */}
       <section className="mb-16">
         <h2 className="text-2xl font-semibold text-gray-900 mb-8">Platforms</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
