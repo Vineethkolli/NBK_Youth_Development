@@ -14,13 +14,9 @@ export const LanguageProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    // If the user has a language preference, use it
-    if (user?.language) {
-      setLanguage(user.language);
-      initializeTranslation(user.language);
-    } else {
-      initializeTranslation(language);
-    }
+    const userLang = user?.language || localStorage.getItem('preferredLanguage') || 'en';
+    setLanguage(userLang);
+    initializeTranslation(userLang);
   }, [user]);
 
   const initializeTranslation = (lang) => {
@@ -55,15 +51,19 @@ export const LanguageProvider = ({ children }) => {
         observer.observe(document.body, { childList: true, subtree: true });
       };
     } else {
-      const container = document.getElementById('google_translate_element');
-      if (container) container.innerHTML = '';
-
-      const script = document.getElementById('google-translate-script');
-      if (script) script.remove();
-
-      const gtFrame = document.querySelector('iframe.goog-te-banner-frame');
-      if (gtFrame) gtFrame.style.display = 'none';
+      resetTranslation();
     }
+  };
+
+  const resetTranslation = () => {
+    const container = document.getElementById('google_translate_element');
+    if (container) container.innerHTML = '';
+
+    const script = document.getElementById('google-translate-script');
+    if (script) script.remove();
+
+    const gtFrame = document.querySelector('iframe.goog-te-banner-frame');
+    if (gtFrame) gtFrame.style.display = 'none';
   };
 
   const changeLanguage = async (newLanguage) => {
@@ -87,6 +87,7 @@ export const LanguageProvider = ({ children }) => {
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage }}>
+      <div id="google_translate_element" style={{ display: 'none' }}></div>
       {children}
     </LanguageContext.Provider>
   );
