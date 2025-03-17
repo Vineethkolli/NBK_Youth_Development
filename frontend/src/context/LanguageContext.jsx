@@ -10,13 +10,35 @@ export const useLanguage = () => useContext(LanguageContext);
 export const LanguageProvider = ({ children }) => {
   const { user } = useAuth();
   const [language, setLanguage] = useState(() => {
+    // initial value from localStorage or default to 'en'
     return localStorage.getItem('preferredLanguage') || 'en';
   });
 
+  // Always fetch the user language from the DB if logged in
   useEffect(() => {
-    const userLang = user?.language || localStorage.getItem('preferredLanguage') || 'en';
-    setLanguage(userLang);
-    initializeTranslation(userLang);
+    async function fetchUserLanguage() {
+      try {
+        const response = await axios.get(`${API_URL}/api/users/language`);
+        if (response.data && response.data.language) {
+          setLanguage(response.data.language);
+          localStorage.setItem('preferredLanguage', response.data.language);
+          initializeTranslation(response.data.language);
+        } else {
+          initializeTranslation(language);
+        }
+      } catch (error) {
+        console.error('Failed to fetch language preference from DB:', error);
+        // fallback to using the current language from state/localStorage
+        initializeTranslation(language);
+      }
+    }
+
+    if (user) {
+      fetchUserLanguage();
+    } else {
+      // For non-logged in users, use the localStorage value
+      initializeTranslation(language);
+    }
   }, [user]);
 
   const initializeTranslation = (lang) => {
@@ -51,19 +73,15 @@ export const LanguageProvider = ({ children }) => {
         observer.observe(document.body, { childList: true, subtree: true });
       };
     } else {
-      resetTranslation();
+      const container = document.getElementById('google_translate_element');
+      if (container) container.innerHTML = '';
+
+      const script = document.getElementById('google-translate-script');
+      if (script) script.remove();
+
+      const gtFrame = document.querySelector('iframe.goog-te-banner-frame');
+      if (gtFrame) gtFrame.style.display = 'none';
     }
-  };
-
-  const resetTranslation = () => {
-    const container = document.getElementById('google_translate_element');
-    if (container) container.innerHTML = '';
-
-    const script = document.getElementById('google-translate-script');
-    if (script) script.remove();
-
-    const gtFrame = document.querySelector('iframe.goog-te-banner-frame');
-    if (gtFrame) gtFrame.style.display = 'none';
   };
 
   const changeLanguage = async (newLanguage) => {
@@ -87,7 +105,6 @@ export const LanguageProvider = ({ children }) => {
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage }}>
-      <div id="google_translate_element" style={{ display: 'none' }}></div>
       {children}
     </LanguageContext.Provider>
   );
