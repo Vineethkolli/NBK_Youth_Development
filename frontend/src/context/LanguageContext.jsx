@@ -1,3 +1,4 @@
+// frontend/src/context/LanguageContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../utils/config';
@@ -10,34 +11,18 @@ export const useLanguage = () => useContext(LanguageContext);
 export const LanguageProvider = ({ children }) => {
   const { user } = useAuth();
   const [language, setLanguage] = useState(() => {
-    // initial value from localStorage or default to 'en'
-    return localStorage.getItem('preferredLanguage') || 'en';
+    // First check localStorage
+    const storedLanguage = localStorage.getItem('preferredLanguage');
+    // If no stored language, default to 'en'
+    return storedLanguage || 'en';
   });
 
-  // Always fetch the user language from the DB if logged in
   useEffect(() => {
-    async function fetchUserLanguage() {
-      try {
-        const response = await axios.get(`${API_URL}/api/users/language`);
-        if (response.data && response.data.language) {
-          setLanguage(response.data.language);
-          localStorage.setItem('preferredLanguage', response.data.language);
-          initializeTranslation(response.data.language);
-        } else {
-          initializeTranslation(language);
-        }
-      } catch (error) {
-        console.error('Failed to fetch language preference from DB:', error);
-        // fallback to using the current language from state/localStorage
-        initializeTranslation(language);
-      }
-    }
-
-    if (user) {
-      fetchUserLanguage();
-    } else {
-      // For non-logged in users, use the localStorage value
-      initializeTranslation(language);
+    // When user logs in, get their language preference from DB
+    if (user?.language) {
+      setLanguage(user.language);
+      localStorage.setItem('preferredLanguage', user.language);
+      initializeTranslation(user.language);
     }
   }, [user]);
 
@@ -61,6 +46,7 @@ export const LanguageProvider = ({ children }) => {
           'google_translate_element'
         );
 
+        // Force Telugu translation if needed
         const observer = new MutationObserver(() => {
           const selectLang = document.querySelector('.goog-te-combo');
           if (selectLang) {
@@ -73,20 +59,24 @@ export const LanguageProvider = ({ children }) => {
         observer.observe(document.body, { childList: true, subtree: true });
       };
     } else {
+      // Clean up Telugu translation if switching back to English
       const container = document.getElementById('google_translate_element');
       if (container) container.innerHTML = '';
 
       const script = document.getElementById('google-translate-script');
       if (script) script.remove();
 
+      // Hide Google Translate banner
       const gtFrame = document.querySelector('iframe.goog-te-banner-frame');
       if (gtFrame) gtFrame.style.display = 'none';
     }
   };
 
   const changeLanguage = async (newLanguage) => {
+    // Update localStorage
     localStorage.setItem('preferredLanguage', newLanguage);
 
+    // If user is logged in, update their preference in DB
     if (user) {
       try {
         await axios.patch(`${API_URL}/api/users/language`, { language: newLanguage });
@@ -98,6 +88,7 @@ export const LanguageProvider = ({ children }) => {
     setLanguage(newLanguage);
     initializeTranslation(newLanguage);
 
+    // Reload page if switching to English to clear translations
     if (newLanguage === 'en') {
       window.location.reload();
     }

@@ -49,19 +49,21 @@ export const AuthProvider = ({ children }) => {
     setUser(data.user);
   };
 
-  const signup = async (userData) => {
-    // Get the current language preference
-    const language = localStorage.getItem('preferredLanguage') || 'en';
+// In frontend/src/context/AuthContext.jsx, update the signup function:
 
-    const { data } = await axios.post(`${API_URL}/api/auth/signup`, {
-      ...userData,
-      language, // Include language preference in signup data
-    });
-
-    localStorage.setItem('token', data.token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-    setUser(data.user);
-  };
+const signup = async (userData) => {
+  // Get the current language preference
+  const language = localStorage.getItem('preferredLanguage') || 'en';
+  
+  const { data } = await axios.post(`${API_URL}/api/auth/signup`, {
+    ...userData,
+    language, // Include language preference in signup data
+  });
+  
+  localStorage.setItem('token', data.token);
+  axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+  setUser(data.user);
+};
 
   const signout = () => {
     localStorage.removeItem('token');
