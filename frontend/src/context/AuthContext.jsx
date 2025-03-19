@@ -24,6 +24,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
       setUser(data);
+      // Synchronize language in localStorage if available
+      if (data.language) {
+        localStorage.setItem('preferredLanguage', data.language);
+      }
     } catch (error) {
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
@@ -45,6 +49,10 @@ export const AuthProvider = ({ children }) => {
       password,
     });
     localStorage.setItem('token', data.token);
+    // Update language in localStorage if returned from the server
+    if (data.user.language) {
+      localStorage.setItem('preferredLanguage', data.user.language);
+    }
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data.user);
   };
@@ -59,6 +67,9 @@ export const AuthProvider = ({ children }) => {
     });
 
     localStorage.setItem('token', data.token);
+    if (data.user.language) {
+      localStorage.setItem('preferredLanguage', data.user.language);
+    }
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data.user);
   };
@@ -80,3 +91,5 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+export default AuthContext;
