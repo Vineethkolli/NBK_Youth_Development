@@ -52,7 +52,7 @@ export const signUp = async (req, res) => {
 
 export const signIn = async (req, res) => {
   try {
-    const { identifier, password } = req.body;
+    const { identifier, password, language } = req.body;
     const user = await User.findOne({
       $or: [
         { email: identifier },
@@ -61,6 +61,11 @@ export const signIn = async (req, res) => {
     });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    // Update language preference if provided and it differs from stored language
+    if (language && language !== user.language) {
+      user.language = language;
+      await user.save();
     }
     const token = jwt.sign(
       { id: user._id, role: user.role },

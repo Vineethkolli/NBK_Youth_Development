@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
       setUser(data);
-      // Synchronize language in localStorage if available
+      // Synchronize language in localStorage
       if (data.language) {
         localStorage.setItem('preferredLanguage', data.language);
       }
@@ -44,12 +44,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signin = async (identifier, password) => {
+    // Read current language preference from localStorage
+    const language = localStorage.getItem('preferredLanguage') || 'en';
     const { data } = await axios.post(`${API_URL}/api/auth/signin`, {
       identifier,
       password,
+      language, // send language along with credentials
     });
     localStorage.setItem('token', data.token);
-    // Update language in localStorage if returned from the server
+    // Update language preference if returned from backend
     if (data.user.language) {
       localStorage.setItem('preferredLanguage', data.user.language);
     }
