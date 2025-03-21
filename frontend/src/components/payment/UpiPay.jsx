@@ -2,7 +2,7 @@ import React from 'react';
 
 const UpiPay = () => {
   // Replace these parameters with your own UPI details
-  const upiId = 'kolliniharika@oksbi';
+  const upiId = 'kolliniharika30@oksbi';
   const name = 'Your Name';
   const transactionNote = 'Test Payment';
   const amount = '100'; // Set a default amount (can be dynamic)
