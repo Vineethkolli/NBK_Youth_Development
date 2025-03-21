@@ -33,16 +33,18 @@ function DashboardLayout() {
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={sidebarOpen} onNavigate={closeSidebar} />
 
-      {/* Overlay that closes sidebar when clicked */}
+      {/* Overlay that closes sidebar when clicked outside */}
       {sidebarOpen && (
         <div
           onClick={closeSidebar}
-          className="fixed inset-0 z-5 bg-transparent"
+          className="fixed inset-0 z-10 bg-transparent"
         />
       )}
 
       <main
-        className="flex-1 overflow-auto p-8 mt-12 md:ml-64 pb-20 min-h-[calc(100vh-3rem)]"
+        className={`flex-1 overflow-auto p-8 mt-12 pb-20 min-h-[calc(100vh-3rem)] transition-transform duration-300 ${
+          sidebarOpen ? 'translate-x-60' : ''
+        }`}
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         <Outlet />
