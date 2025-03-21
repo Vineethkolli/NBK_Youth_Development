@@ -9,24 +9,19 @@ export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
   const { user } = useAuth();
-  const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('preferredLanguage') || 'en';
-  });
+  // Use localStorage as the source of truth
+  const [language, setLanguage] = useState(() => localStorage.getItem('preferredLanguage') || 'en');
 
+  // On every load or when user changes, read the stored preferred language
   useEffect(() => {
-    if (user?.language) {
-      setLanguage(user.language);
-      localStorage.setItem('preferredLanguage', user.language);
-      initializeTranslation(user.language);
-    } else {
-      const storedLang = localStorage.getItem('preferredLanguage') || 'en';
-      setLanguage(storedLang);
-      initializeTranslation(storedLang);
-    }
+    const storedLang = localStorage.getItem('preferredLanguage') || 'en';
+    setLanguage(storedLang);
+    initializeTranslation(storedLang);
   }, [user]);
+
   const initializeTranslation = (lang) => {
     if (lang === 'te') {
-      // Always remove any existing Google Translate elements
+      // Remove any existing Google Translate elements to force a fresh injection
       const oldScript = document.getElementById('google-translate-script');
       if (oldScript) {
         oldScript.remove();
@@ -39,14 +34,14 @@ export const LanguageProvider = ({ children }) => {
       if (gtFrame) {
         gtFrame.style.display = 'none';
       }
-  
-      // Inject the Google Translate script fresh
+
+      // Inject the Google Translate script afresh
       const script = document.createElement('script');
       script.id = 'google-translate-script';
       script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
       script.async = true;
       document.body.appendChild(script);
-  
+
       // Define the global callback for Google Translate
       window.googleTranslateElementInit = () => {
         new window.google.translate.TranslateElement(
@@ -57,7 +52,7 @@ export const LanguageProvider = ({ children }) => {
           },
           'google_translate_element'
         );
-  
+
         // Wait briefly for the dropdown to appear, then switch to Telugu
         setTimeout(() => {
           const selectLang = document.querySelector('.goog-te-combo');
@@ -68,7 +63,7 @@ export const LanguageProvider = ({ children }) => {
         }, 1500);
       };
     } else {
-      // Reset to English: remove translation elements
+      // Reset to English: Remove any translation elements
       const container = document.getElementById('google_translate_element');
       if (container) container.innerHTML = '';
       const script = document.getElementById('google-translate-script');
@@ -77,18 +72,20 @@ export const LanguageProvider = ({ children }) => {
       if (gtFrame) gtFrame.style.display = 'none';
     }
   };
-  
 
   const changeLanguage = async (newLanguage) => {
+    // Update localStorage and state
     localStorage.setItem('preferredLanguage', newLanguage);
     if (user) {
       try {
         await axios.patch(`${API_URL}/api/users/language`, { language: newLanguage });
       } catch (error) {
+        // Optionally handle the error
       }
     }
     setLanguage(newLanguage);
     initializeTranslation(newLanguage);
+    // If switching to English, reload to clear translation artifacts
     if (newLanguage === 'en') {
       window.location.reload();
     }
