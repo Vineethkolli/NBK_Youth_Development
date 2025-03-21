@@ -23,18 +23,26 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
-      setUser(data);
-      // Synchronize language in localStorage based on backend profile
+      console.log('fetchProfile success:', data);
+      
+      setUser(prevUser => ({
+        ...prevUser,
+        ...data // Merge new user data
+      }));
+      
       if (data.language) {
         localStorage.setItem('preferredLanguage', data.language);
       }
     } catch (error) {
+      console.log('fetchProfile error:', error.response?.data || error.message);
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   const updateUserData = (newData) => {
     setUser((prevUser) => ({
@@ -51,6 +59,7 @@ export const AuthProvider = ({ children }) => {
       password,
       language, // send language along with credentials
     });
+    console.log("Fetched token:", data.token); 
     localStorage.setItem('token', data.token);
     // Update language preference if returned from backend
     if (data.user.language) {

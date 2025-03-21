@@ -14,14 +14,19 @@ export const LanguageProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    // Update language if the user has a language preference in their profile
+    console.log("LanguageContext useEffect triggered. user.language:", user?.language);
     if (user?.language) {
-      setLanguage(user.language);
+      setLanguage(user.language); // Update state when user is fetched
+      localStorage.setItem('preferredLanguage', user.language);
       initializeTranslation(user.language);
     } else {
-      initializeTranslation(language);
+      const storedLang = localStorage.getItem('preferredLanguage') || 'en';
+      setLanguage(storedLang);
+      initializeTranslation(storedLang);
     }
-  }, [user]);
+  }, [user]); // Depend on `user`
+  
+  
 
   const initializeTranslation = (lang) => {
     if (lang === 'te') {
