@@ -4,7 +4,6 @@ import Notification from '../models/Notification.js';
 // Update profile image
 export const updateProfileImage = async (req, res) => {
   try {
-    // For example, assume the image URL is sent in the body
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -61,12 +60,10 @@ export const updateProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Prevent updating default developer email
     if (user.email === 'gangavaramnbkyouth@gmail.com' && email !== 'gangavaramnbkyouth@gmail.com') {
       return res.status(403).json({ message: 'Cannot change default developer email' });
     }
     
-    // Check if email is already taken by another user
     if (email && email !== user.email) {
       const emailExists = await User.findOne({ email });
       if (emailExists) {
@@ -74,7 +71,6 @@ export const updateProfile = async (req, res) => {
       }
     }
     
-    // Check if phone number is already taken by another user
     if (phoneNumber && phoneNumber !== user.phoneNumber) {
       const phoneExists = await User.findOne({ phoneNumber });
       if (phoneExists) {
@@ -102,7 +98,6 @@ export const updateUserCategory = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Prevent category change for default developer account
     if (userToUpdate.email === 'gangavaramnbkyouth@gmail.com') {
       return res.status(403).json({ message: 'Cannot change default developer category' });
     }
@@ -128,7 +123,6 @@ export const deleteUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Prevent deletion of default developer account
     if (userToDelete.email === 'gangavaramnbkyouth@gmail.com') {
       return res.status(403).json({ message: 'Cannot delete default developer account' });
     }
@@ -149,7 +143,6 @@ export const updateUserRole = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Prevent role change for default developer account
     if (userToUpdate.email === 'gangavaramnbkyouth@gmail.com') {
       return res.status(403).json({ message: 'Cannot change default developer role' });
     }
@@ -166,7 +159,7 @@ export const updateUserRole = async (req, res) => {
   }
 };
 
-// Get user profile
+// Get user profile (used by AuthContext)
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');

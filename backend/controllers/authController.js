@@ -96,11 +96,8 @@ export const forgotPassword = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    // Save OTP to database
     await OTP.create({ email, otp });
-    // Send OTP via email
     const emailSent = await sendOTPEmail(email, otp);
     if (!emailSent) {
       return res.status(500).json({ message: 'Failed to send OTP email' });
@@ -119,7 +116,6 @@ export const verifyOtp = async (req, res) => {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
     await OTP.deleteOne({ _id: otpRecord._id });
-    // Generate temporary token for password reset
     const resetToken = jwt.sign(
       { email },
       process.env.JWT_SECRET,
