@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
       setUser(data);
-      // Synchronize language in localStorage
+      // Synchronize language in localStorage based on backend profile
       if (data.language) {
         localStorage.setItem('preferredLanguage', data.language);
       }

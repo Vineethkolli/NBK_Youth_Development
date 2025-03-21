@@ -14,7 +14,7 @@ export const LanguageProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    // If the user has a language preference, use it
+    // Update language if the user has a language preference in their profile
     if (user?.language) {
       setLanguage(user.language);
       initializeTranslation(user.language);
@@ -25,6 +25,7 @@ export const LanguageProvider = ({ children }) => {
 
   const initializeTranslation = (lang) => {
     if (lang === 'te') {
+      // Load Google Translate script if not already present
       if (!document.getElementById('google-translate-script')) {
         const script = document.createElement('script');
         script.id = 'google-translate-script';
@@ -43,6 +44,7 @@ export const LanguageProvider = ({ children }) => {
           'google_translate_element'
         );
 
+        // Ensure the page is translated to Telugu
         const observer = new MutationObserver(() => {
           const selectLang = document.querySelector('.goog-te-combo');
           if (selectLang) {
@@ -55,6 +57,7 @@ export const LanguageProvider = ({ children }) => {
         observer.observe(document.body, { childList: true, subtree: true });
       };
     } else {
+      // Reset to English: Remove translation script and reset container
       const container = document.getElementById('google_translate_element');
       if (container) container.innerHTML = '';
 
@@ -69,6 +72,7 @@ export const LanguageProvider = ({ children }) => {
   const changeLanguage = async (newLanguage) => {
     localStorage.setItem('preferredLanguage', newLanguage);
 
+    // Update the language in the backend if the user is authenticated
     if (user) {
       try {
         await axios.patch(`${API_URL}/api/users/language`, { language: newLanguage });
@@ -80,6 +84,7 @@ export const LanguageProvider = ({ children }) => {
     setLanguage(newLanguage);
     initializeTranslation(newLanguage);
 
+    // Optionally reload for English to clear translation artifacts
     if (newLanguage === 'en') {
       window.location.reload();
     }
