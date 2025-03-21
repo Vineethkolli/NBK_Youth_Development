@@ -8,9 +8,7 @@ const IncomeExcel = ({ incomes, visibleColumns }) => {
   const { hiddenProfiles } = useHiddenProfiles();
 
   const handleExcelDownload = () => {
-    // Generate headers based on visibleColumns
     const headers = [];
-    // Add serial number header
     headers.push('S.No');
     
     // Get the list of columns to include
@@ -18,7 +16,6 @@ const IncomeExcel = ({ incomes, visibleColumns }) => {
       (col) => visibleColumns[col]
     );
     
-    // Map visible columns to header titles
     columns.forEach((column) => {
       switch (column) {
         case 'registerId':
@@ -59,12 +56,11 @@ const IncomeExcel = ({ incomes, visibleColumns }) => {
       }
     });
 
-    // Build the data rows
     const data = [];
     data.push(headers);
 
     incomes.forEach((income, index) => {
-      const row = [index + 1]; // Serial number
+      const row = [index + 1]; 
       const isHidden = hiddenProfiles.has(income._id);
       columns.forEach((column) => {
         switch (column) {
@@ -115,9 +111,7 @@ const IncomeExcel = ({ incomes, visibleColumns }) => {
 
     // Write the workbook to a binary array
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    // Create a Blob with the correct MIME type
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    // Use FileSaver to save the file
     saveAs(blob, 'Income_Excel.xlsx');
   };
 

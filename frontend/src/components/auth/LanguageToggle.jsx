@@ -7,6 +7,8 @@ function LanguageToggle() {
   const toggleLanguage = () => {
     const newLanguage = language === 'en' ? 'te' : 'en';
     changeLanguage(newLanguage);
+    // Store language preference in localStorage
+    localStorage.setItem('preferredLanguage', newLanguage);
   };
 
   return (

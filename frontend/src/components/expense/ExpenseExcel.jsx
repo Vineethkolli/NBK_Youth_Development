@@ -5,14 +5,12 @@ import { Download } from 'lucide-react';
 
 const ExpenseExcel = ({ expenses, visibleColumns }) => {
   const handleExcelDownload = () => {
-    // Generate headers based on visibleColumns
     const headers = [];
-    headers.push('S.No'); // First header for Serial Number
+    headers.push('S.No'); 
 
     // Get columns that are marked visible
     const columns = Object.keys(visibleColumns).filter(col => visibleColumns[col]);
 
-    // Map each column to its header label
     columns.forEach(column => {
       switch (column) {
         case 'registerId':
@@ -62,7 +60,6 @@ const ExpenseExcel = ({ expenses, visibleColumns }) => {
       }
     });
 
-    // Prepare data rows
     const data = [];
     data.push(headers);
 
@@ -92,7 +89,7 @@ const ExpenseExcel = ({ expenses, visibleColumns }) => {
             row.push(expense.amount || '');
             break;
           case 'totalSpent':
-            // Calculate total spent from subExpenses
+            
             const total = expense.subExpenses?.reduce((sum, sub) => sum + Number(sub.subAmount), 0) || 0;
             row.push(total);
             break;

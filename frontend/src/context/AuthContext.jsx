@@ -23,13 +23,7 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
-      setUser((prevUser) => ({
-        ...prevUser,
-        ...data, // Merge new user data
-      }));
-      if (data.language) {
-        localStorage.setItem('preferredLanguage', data.language);
-      }
+      setUser(data);
     } catch (error) {
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
@@ -46,31 +40,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signin = async (identifier, password) => {
-    const language = localStorage.getItem('preferredLanguage') || 'en';
     const { data } = await axios.post(`${API_URL}/api/auth/signin`, {
       identifier,
       password,
-      language,
     });
     localStorage.setItem('token', data.token);
-    if (data.user.language) {
-      localStorage.setItem('preferredLanguage', data.user.language);
-    }
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data.user);
   };
 
   const signup = async (userData) => {
+    // Get the current language preference
     const language = localStorage.getItem('preferredLanguage') || 'en';
+
     const { data } = await axios.post(`${API_URL}/api/auth/signup`, {
       ...userData,
-      language,
+      language, // Include language preference in signup data
     });
 
     localStorage.setItem('token', data.token);
-    if (data.user.language) {
-      localStorage.setItem('preferredLanguage', data.user.language);
-    }
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data.user);
   };
@@ -92,5 +80,3 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export default AuthContext;

@@ -49,7 +49,6 @@ function TechStack() {
 
   return (
 <div className="space-y-6">
-  {/* Header Section */}
   <div className="flex flex-col md:flex-row items-center justify-between mb-16">
     {/* Social Media Section */}
     <div className="mb-4">

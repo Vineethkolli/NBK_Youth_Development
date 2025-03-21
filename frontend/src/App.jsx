@@ -73,7 +73,7 @@ function App() {
   useEffect(() => {
     if (navigator.serviceWorker) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        // New SW has taken control; reload the page to apply the new version
+        // reload the page to apply the new version
         window.location.reload();
       });
     }
