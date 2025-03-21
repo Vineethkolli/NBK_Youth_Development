@@ -90,7 +90,15 @@ function InstallApp() {
 
   return (
     <>
-      <div className="fixed top-4 left-4 right-4 bg-green-50 bg-opacity-80 text-green-800 p-4 flex items-center justify-between shadow-lg rounded-lg z-50">
+      {/* Fullscreen overlay to catch clicks outside the prompt */}
+      <div
+        className="fixed inset-0 z-40"
+        onClick={() => setShowInstallPrompt(false)}
+      ></div>
+      <div
+        className="fixed top-4 left-4 right-4 bg-green-50 bg-opacity-80 text-green-800 p-4 flex items-center justify-between shadow-lg rounded-lg z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div>
           <h3 className="text-lg font-medium">Download Our App</h3>
         </div>
@@ -114,8 +122,8 @@ function InstallApp() {
           onClick={() => setShowIOSPopup(false)}
         >
           <div
-            className="bg-white p-6 rounded-lg shadow-lg max-w-sm mx-4 hover:scale-100"
-            onClick={(e) => e.stopPropagation()} 
+            className="bg-white p-6 rounded-lg shadow-lg max-w-sm mx-4"
+            onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold mb-4 text-center text-gray-900">
               Install App

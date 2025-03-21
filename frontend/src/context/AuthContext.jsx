@@ -23,26 +23,20 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
-      console.log('fetchProfile success:', data);
-      
-      setUser(prevUser => ({
+      setUser((prevUser) => ({
         ...prevUser,
-        ...data // Merge new user data
+        ...data, // Merge new user data
       }));
-      
       if (data.language) {
         localStorage.setItem('preferredLanguage', data.language);
       }
     } catch (error) {
-      console.log('fetchProfile error:', error.response?.data || error.message);
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
     } finally {
       setLoading(false);
     }
   };
-  
-  
 
   const updateUserData = (newData) => {
     setUser((prevUser) => ({
@@ -52,16 +46,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signin = async (identifier, password) => {
-    // Read current language preference from localStorage
     const language = localStorage.getItem('preferredLanguage') || 'en';
     const { data } = await axios.post(`${API_URL}/api/auth/signin`, {
       identifier,
       password,
-      language, // send language along with credentials
+      language,
     });
-    console.log("Fetched token:", data.token); 
     localStorage.setItem('token', data.token);
-    // Update language preference if returned from backend
     if (data.user.language) {
       localStorage.setItem('preferredLanguage', data.user.language);
     }
@@ -70,12 +61,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (userData) => {
-    // Get the current language preference
     const language = localStorage.getItem('preferredLanguage') || 'en';
-
     const { data } = await axios.post(`${API_URL}/api/auth/signup`, {
       ...userData,
-      language, // Include language preference in signup data
+      language,
     });
 
     localStorage.setItem('token', data.token);
