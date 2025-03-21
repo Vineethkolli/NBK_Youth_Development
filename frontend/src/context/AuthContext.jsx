@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount, verify if there's a token and fetch profile
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -21,13 +20,12 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Get user profile and update localStorage with preferred language if provided
   const fetchProfile = async () => {
     try {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
       setUser((prevUser) => ({
         ...prevUser,
-        ...data, // merge new user data
+        ...data, // Merge new user data
       }));
       if (data.language) {
         localStorage.setItem('preferredLanguage', data.language);
@@ -48,7 +46,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signin = async (identifier, password) => {
-    // Get language from local storage or fallback to 'en'
     const language = localStorage.getItem('preferredLanguage') || 'en';
     const { data } = await axios.post(`${API_URL}/api/auth/signin`, {
       identifier,
@@ -69,6 +66,7 @@ export const AuthProvider = ({ children }) => {
       ...userData,
       language,
     });
+
     localStorage.setItem('token', data.token);
     if (data.user.language) {
       localStorage.setItem('preferredLanguage', data.user.language);
