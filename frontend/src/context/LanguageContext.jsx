@@ -24,18 +24,29 @@ export const LanguageProvider = ({ children }) => {
       initializeTranslation(storedLang);
     }
   }, [user]);
-
   const initializeTranslation = (lang) => {
     if (lang === 'te') {
-      // Load Google Translate script if not already present
-      if (!document.getElementById('google-translate-script')) {
-        const script = document.createElement('script');
-        script.id = 'google-translate-script';
-        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-        script.async = true;
-        document.body.appendChild(script);
+      // Always remove any existing Google Translate elements
+      const oldScript = document.getElementById('google-translate-script');
+      if (oldScript) {
+        oldScript.remove();
       }
-
+      const container = document.getElementById('google_translate_element');
+      if (container) {
+        container.innerHTML = '';
+      }
+      const gtFrame = document.querySelector('iframe.goog-te-banner-frame');
+      if (gtFrame) {
+        gtFrame.style.display = 'none';
+      }
+  
+      // Inject the Google Translate script fresh
+      const script = document.createElement('script');
+      script.id = 'google-translate-script';
+      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      document.body.appendChild(script);
+  
       // Define the global callback for Google Translate
       window.googleTranslateElementInit = () => {
         new window.google.translate.TranslateElement(
@@ -46,7 +57,7 @@ export const LanguageProvider = ({ children }) => {
           },
           'google_translate_element'
         );
-
+  
         // Wait briefly for the dropdown to appear, then switch to Telugu
         setTimeout(() => {
           const selectLang = document.querySelector('.goog-te-combo');
@@ -60,14 +71,13 @@ export const LanguageProvider = ({ children }) => {
       // Reset to English: remove translation elements
       const container = document.getElementById('google_translate_element');
       if (container) container.innerHTML = '';
-
       const script = document.getElementById('google-translate-script');
       if (script) script.remove();
-
       const gtFrame = document.querySelector('iframe.goog-te-banner-frame');
       if (gtFrame) gtFrame.style.display = 'none';
     }
   };
+  
 
   const changeLanguage = async (newLanguage) => {
     localStorage.setItem('preferredLanguage', newLanguage);
