@@ -4,7 +4,6 @@ import { toast } from 'react-hot-toast';
 import PaymentForm from '../components/payment/PaymentForm';
 import PaymentHistory from '../components/payment/PaymentHistory';
 import { API_URL } from '../utils/config';
-import UpiPay from '../components/payment/UpiPay';
 
 function PayOnline() {
   const handlePaymentSubmit = async (paymentData) => {
@@ -30,7 +29,6 @@ function PayOnline() {
       <PaymentForm onSubmit={handlePaymentSubmit} />
       
       <PaymentHistory />
-      <UpiPay />
     </div>
   );
 }

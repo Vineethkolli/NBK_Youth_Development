@@ -5,7 +5,8 @@ import { sendOTPEmail } from '../utils/emailService.js';
 
 export const signUp = async (req, res) => {
   try {
-    const { name, email, phoneNumber, password } = req.body;
+    // Accept language from the request body
+    const { name, email, phoneNumber, password, language } = req.body;
     if (!name || !phoneNumber || !password) {
       return res.status(400).json({ message: 'Required fields missing' });
     }
@@ -21,11 +22,13 @@ export const signUp = async (req, res) => {
         return res.status(400).json({ message: 'User already exists' });
       }
     }
+    // Create user with language (default to 'en' if not provided)
     const user = await User.create({
       name,
       email: email || undefined,
       phoneNumber,
-      password
+      password,
+      language: language || 'en'
     });
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -39,7 +42,8 @@ export const signUp = async (req, res) => {
         name: user.name,
         email: user.email,
         phoneNumber: user.phoneNumber,
-        role: user.role
+        role: user.role,
+        language: user.language 
       }
     });
   } catch (error) {
@@ -73,7 +77,8 @@ export const signIn = async (req, res) => {
         name: user.name,
         email: user.email,
         phoneNumber: user.phoneNumber,
-        role: user.role
+        role: user.role,
+        language: user.language  
       }
     });
   } catch (error) {
