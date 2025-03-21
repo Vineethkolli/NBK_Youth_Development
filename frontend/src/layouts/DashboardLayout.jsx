@@ -65,7 +65,7 @@ function DashboardLayout() {
             ) : (
               <Menu className="h-6 w-6" />
             )}
-            <span className="text-xs mt-1">Men\u</span>
+            <span className="text-xs mt-1">Menu</span>
           </button>
 
           {/* Home Button */}
