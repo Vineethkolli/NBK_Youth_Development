@@ -14,27 +14,31 @@ export const LanguageProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    if (user?.language) {
-      setLanguage(user.language);
-      localStorage.setItem('preferredLanguage', user.language);
-      initializeTranslation(user.language);
-    } else {
-      const storedLang = localStorage.getItem('preferredLanguage') || 'en';
-      setLanguage(storedLang);
-      initializeTranslation(storedLang);
-    }
+    // Determine the language to use: user language takes precedence over localStorage
+    const storedLang = localStorage.getItem('preferredLanguage') || 'en';
+    const langToUse = user?.language || storedLang;
+    setLanguage(langToUse);
+    initializeTranslation(langToUse);
   }, [user]);
 
   const initializeTranslation = (lang) => {
     if (lang === 'te') {
-      // Load Google Translate script if not already present
-      if (!document.getElementById('google-translate-script')) {
-        const script = document.createElement('script');
-        script.id = 'google-translate-script';
-        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-        script.async = true;
-        document.body.appendChild(script);
+      // Force reinitialization by removing any existing script
+      const oldScript = document.getElementById('google-translate-script');
+      if (oldScript) {
+        oldScript.remove();
       }
+
+      // Clear previous translation container content
+      const container = document.getElementById('google_translate_element');
+      if (container) container.innerHTML = '';
+
+      // Create and load the Google Translate script
+      const script = document.createElement('script');
+      script.id = 'google-translate-script';
+      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      document.body.appendChild(script);
 
       // Define the global callback for Google Translate
       window.googleTranslateElementInit = () => {
@@ -57,7 +61,7 @@ export const LanguageProvider = ({ children }) => {
         }, 1500);
       };
     } else {
-      // Reset to English: remove translation elements
+      // Reset to English: remove translation elements and script
       const container = document.getElementById('google_translate_element');
       if (container) container.innerHTML = '';
 
@@ -75,6 +79,7 @@ export const LanguageProvider = ({ children }) => {
       try {
         await axios.patch(`${API_URL}/api/users/language`, { language: newLanguage });
       } catch (error) {
+        console.error('Error updating language', error);
       }
     }
     setLanguage(newLanguage);
