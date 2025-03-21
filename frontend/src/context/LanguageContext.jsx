@@ -10,23 +10,25 @@ export const useLanguage = () => useContext(LanguageContext);
 export const LanguageProvider = ({ children }) => {
   const { user } = useAuth();
   const [language, setLanguage] = useState(() => {
+    // Initial read from localStorage
     return localStorage.getItem('preferredLanguage') || 'en';
   });
 
   useEffect(() => {
-    console.log("LanguageContext useEffect triggered. user.language:", user?.language);
+    console.log('LanguageContext useEffect triggered. user.language:', user?.language);
+
     if (user?.language) {
-      setLanguage(user.language); // Update state when user is fetched
+      // If user object is available and has a language field
+      setLanguage(user.language);
       localStorage.setItem('preferredLanguage', user.language);
       initializeTranslation(user.language);
     } else {
+      // Otherwise, fallback to whatever is in localStorage
       const storedLang = localStorage.getItem('preferredLanguage') || 'en';
       setLanguage(storedLang);
       initializeTranslation(storedLang);
     }
-  }, [user]); // Depend on `user`
-  
-  
+  }, [user]);
 
   const initializeTranslation = (lang) => {
     if (lang === 'te') {
@@ -39,30 +41,31 @@ export const LanguageProvider = ({ children }) => {
         document.body.appendChild(script);
       }
 
+      // Define the global callback for Google Translate
       window.googleTranslateElementInit = () => {
+        console.log('googleTranslateElementInit called for Telugu!');
         new window.google.translate.TranslateElement(
           {
             pageLanguage: 'en',
-            includedLanguages: 'te',
+            // Optional: include English too so the user can manually switch back
+            includedLanguages: 'te,en',
             autoDisplay: false,
           },
           'google_translate_element'
         );
 
-        // Ensure the page is translated to Telugu
-        const observer = new MutationObserver(() => {
+        // Instead of a MutationObserver, wait briefly for the dropdown to appear
+        setTimeout(() => {
           const selectLang = document.querySelector('.goog-te-combo');
+          console.log('setTimeout approach. Found .goog-te-combo:', selectLang);
           if (selectLang) {
             selectLang.value = 'te';
             selectLang.dispatchEvent(new Event('change'));
-            observer.disconnect();
           }
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
+        }, 1500);
       };
     } else {
-      // Reset to English: Remove translation script and reset container
+      // Reset to English: remove script, container, and banner
       const container = document.getElementById('google_translate_element');
       if (container) container.innerHTML = '';
 
@@ -75,21 +78,27 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const changeLanguage = async (newLanguage) => {
+    console.log('changeLanguage called with:', newLanguage);
+
+    // Always update localStorage
     localStorage.setItem('preferredLanguage', newLanguage);
 
     // Update the language in the backend if the user is authenticated
     if (user) {
       try {
-        await axios.patch(`${API_URL}/api/users/language`, { language: newLanguage });
+        await axios.patch(`${API_URL}/api/users/language`, {
+          language: newLanguage,
+        });
       } catch (error) {
         console.error('Failed to update language preference:', error);
       }
     }
 
+    // Update local state and re-initialize translation
     setLanguage(newLanguage);
     initializeTranslation(newLanguage);
 
-    // Optionally reload for English to clear translation artifacts
+    // Optionally reload if switching to English to clear Google Translate artifacts
     if (newLanguage === 'en') {
       window.location.reload();
     }
