@@ -12,7 +12,6 @@ const createTranslationContainer = () => {
   if (!container) {
     container = document.createElement('div');
     container.id = 'google_translate_element';
-    // Append the container
     document.body.appendChild(container);
   }
   return container;
