@@ -3,6 +3,11 @@ import Income from '../models/Income.js';
 import Expense from '../models/Expense.js';
 import IncomeLog from '../models/IncomeLog.js';
 import ExpenseLog from '../models/ExpenseLog.js';
+import Notification from '../models/Notification.js';
+import NotificationHistory from '../models/NotificationHistory.js';
+import EstimatedIncome from '../models/EstimatedIncome.js';
+import EstimatedExpense from '../models/EstimatedExpense.js';
+import Game from '../models/Game.js';
 
 export const developerController = {
   clearData: async (req, res) => {
@@ -25,6 +30,27 @@ export const developerController = {
           // Delete all expense records and logs
           await Expense.deleteMany({});
           await ExpenseLog.deleteMany({});
+          break;
+
+        case 'notifications':
+          // Delete all notification subscriptions and history
+          await Notification.deleteMany({});
+          await NotificationHistory.deleteMany({});
+          break;
+
+        case 'estimatedIncome':
+          // Delete all estimated income records
+          await EstimatedIncome.deleteMany({});
+          break;
+
+        case 'estimatedExpense':
+          // Delete all estimated expense records
+          await EstimatedExpense.deleteMany({});
+          break;
+
+        case 'letsPlay':
+          // Delete all games and players
+          await Game.deleteMany({});
           break;
 
         default:
