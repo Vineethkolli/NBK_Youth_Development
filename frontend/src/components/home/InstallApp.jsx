@@ -55,7 +55,7 @@ function InstallApp() {
     };
     window.addEventListener('appinstalled', onAppInstalled);
 
-    // Add global click listener to close the ribbon when clicking outside the prompt
+    // Global click listener to close the ribbon when clicking outside the prompt
     const handleClickOutside = (event) => {
       if (promptRef.current && !promptRef.current.contains(event.target)) {
         setShowInstallPrompt(false);
@@ -104,7 +104,7 @@ function InstallApp() {
       <div
         ref={promptRef}
         className="fixed top-4 left-4 right-4 bg-green-50 bg-opacity-80 text-green-800 p-4 flex items-center justify-between shadow-lg rounded-lg z-50"
-        // Stop propagation so that clicks inside the container don’t trigger the document listener
+        // Clicks inside the container don’t trigger the document listener
         onClick={(e) => e.stopPropagation()}
       >
         <div>
