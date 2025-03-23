@@ -7,6 +7,17 @@ const LanguageContext = createContext();
 
 export const useLanguage = () => useContext(LanguageContext);
 
+const createTranslationContainer = () => {
+  let container = document.getElementById('google_translate_element');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'google_translate_element';
+    // Append the container at the end of the body or a more suitable location in your layout
+    document.body.appendChild(container);
+  }
+  return container;
+};
+
 export const LanguageProvider = ({ children }) => {
   const { user } = useAuth();
   const [language, setLanguage] = useState(
@@ -32,10 +43,8 @@ export const LanguageProvider = ({ children }) => {
       if (existingScript) {
         existingScript.remove();
       }
-      const container = document.getElementById('google_translate_element');
-      if (container) {
-        container.innerHTML = '';
-      }
+      const container = createTranslationContainer();
+      container.innerHTML = '';
 
       // Load Google Translate script
       const script = document.createElement('script');
