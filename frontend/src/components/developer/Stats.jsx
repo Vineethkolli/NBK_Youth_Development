@@ -146,7 +146,6 @@ const RoleStatistics = () => {
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">English</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{stats.languageStats.english.count}</td>
-                <td className="px-6 py-4 text-sm">{stats.languageStats.english.registerIds.join(', ')}</td>
               </tr>
             </tbody>
           </table>
@@ -177,7 +176,6 @@ const RoleStatistics = () => {
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">Enabled</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{stats.notificationStats.enabled.count}</td>
-                <td className="px-6 py-4 text-sm">{stats.notificationStats.enabled.registerIds.join(', ')}</td>
               </tr>
             </tbody>
           </table>

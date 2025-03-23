@@ -1,9 +1,7 @@
-import User from '../models/User.js';
 import Income from '../models/Income.js';
 import Expense from '../models/Expense.js';
 import IncomeLog from '../models/IncomeLog.js';
 import ExpenseLog from '../models/ExpenseLog.js';
-import Notification from '../models/Notification.js';
 import NotificationHistory from '../models/NotificationHistory.js';
 import EstimatedIncome from '../models/EstimatedIncome.js';
 import EstimatedExpense from '../models/EstimatedExpense.js';
@@ -15,10 +13,6 @@ export const developerController = {
 
     try {
       switch (type) {
-        case 'users':
-          // Delete all users except developer account
-          await User.deleteMany({ email: { $ne: 'gangavaramnbkyouth@gmail.com' } });
-          break;
 
         case 'income':
           // Delete all income records and logs
@@ -34,7 +28,6 @@ export const developerController = {
 
         case 'notifications':
           // Delete all notification subscriptions and history
-          await Notification.deleteMany({});
           await NotificationHistory.deleteMany({});
           break;
 
