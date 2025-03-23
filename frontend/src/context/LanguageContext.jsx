@@ -12,7 +12,7 @@ const createTranslationContainer = () => {
   if (!container) {
     container = document.createElement('div');
     container.id = 'google_translate_element';
-    // Append the container at the end of the body or a more suitable location in your layout
+    // Append the container
     document.body.appendChild(container);
   }
   return container;
@@ -101,7 +101,7 @@ export const LanguageProvider = ({ children }) => {
     setLanguage(newLanguage);
     initializeTranslation(newLanguage);
     if (newLanguage === 'en') {
-      // Reloading the page ensures that the default (English) state is applied cleanly
+      // Reloading the page ensures that the default (English) state is applied
       window.location.reload();
     }
   };

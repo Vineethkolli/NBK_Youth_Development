@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axios.get(`${API_URL}/api/users/profile`);
       setUser((prevUser) => ({
         ...prevUser,
-        ...data, // Merge new user data
+        ...data, 
       }));
       if (data.language) {
         localStorage.setItem('preferredLanguage', data.language);
