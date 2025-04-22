@@ -27,6 +27,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { HiddenProfileProvider } from './context/HiddenProfileContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { MaintenanceModeProvider, useMaintenanceMode } from './context/MaintenanceModeContext';
+import { MusicProvider } from './context/MusicContext';
+import MusicPlayer from './components/vibe/MusicPlayer';
 import TechStack from './pages/TechStack';
 
 function AppContent() {
@@ -64,6 +66,7 @@ function AppContent() {
           <Route path="/tech-stack" element={<TechStack />} />
         </Route>
       </Routes>
+      <MusicPlayer />
     </>
   );
 }
@@ -84,9 +87,11 @@ function App() {
       <LanguageProvider>
         <HiddenProfileProvider>
           <MaintenanceModeProvider>
-            <Router>
-              <AppContent />
-            </Router>
+            <MusicProvider>
+              <Router>
+                <AppContent />
+              </Router>
+            </MusicProvider>
           </MaintenanceModeProvider>
         </HiddenProfileProvider>
       </LanguageProvider>
