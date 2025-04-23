@@ -1,13 +1,36 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, ExternalLink} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { API_URL } from '../../utils/config';
 
-function BannerManager() {
+function StatusToggle({ banner, onToggle }) {
+  const isEnabled = banner.status === 'enabled';
+
+  return (
+    <button
+      onClick={() => onToggle(banner)}
+      className={`relative w-9 h-4 flex items-center rounded-full transition-colors duration-300 ${
+        isEnabled ? 'bg-green-500' : 'bg-gray-300'
+      }`}
+    >
+      <span
+        className={`absolute left-0 top-0 w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-300 flex items-center justify-center ${
+          isEnabled ? 'translate-x-5' : 'translate-x-0'
+        }`}
+      >
+      </span>
+    </button>
+  );
+}
+
+
+
+export default function BannerManager() {
   const [banners, setBanners] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     message: '',
@@ -15,7 +38,7 @@ function BannerManager() {
     video: '',
     status: 'disabled',
     periodicity: 1,
-    duration: 0
+    duration: 0,
   });
 
   useEffect(() => {
@@ -26,7 +49,7 @@ function BannerManager() {
     try {
       const { data } = await axios.get(`${API_URL}/api/banners`);
       setBanners(data);
-    } catch (error) {
+    } catch (err) {
       toast.error('Failed to fetch banners');
     }
   };
@@ -34,21 +57,23 @@ function BannerManager() {
   const handleFileChange = async (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error('File size should be less than 50MB');
+    if (file.size > 200 * 1024 * 1024) {
+      toast.error('File size should be less than 200MB');
       return;
     }
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      setFormData({ ...formData, [type]: reader.result });
+      setFormData(f => ({ ...f, [type]: reader.result }));
     };
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+
     try {
       if (formData._id) {
         await axios.put(`${API_URL}/api/banners/${formData._id}`, formData);
@@ -58,18 +83,12 @@ function BannerManager() {
         toast.success('Banner created successfully');
       }
       setShowForm(false);
-      setFormData({
-        title: '',
-        message: '',
-        image: '',
-        video: '',
-        status: 'disabled',
-        periodicity: 1,
-        duration: 0
-      });
+      resetForm();
       fetchBanners();
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Operation failed');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Operation failed');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -84,13 +103,66 @@ function BannerManager() {
       await axios.delete(`${API_URL}/api/banners/${id}`);
       toast.success('Banner deleted successfully');
       fetchBanners();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete banner');
     }
   };
 
+  const handleToggleStatus = async (banner) => {
+    try {
+      if (banner.status === 'disabled') {
+        const currentEnabled = banners.find(b => b.status === 'enabled');
+        if (currentEnabled) {
+          toast.error('Please disable the currently enabled banner first');
+          return;
+        }
+      }
+  
+      // Now toggle the clicked banner’s status
+      const updatedStatus = banner.status === 'enabled' ? 'disabled' : 'enabled';
+      await axios.put(`${API_URL}/api/banners/${banner._id}`, {
+        ...banner,
+        status: updatedStatus,
+      });
+  
+      toast.success(`Banner ${updatedStatus}`);
+      await fetchBanners();
+    } catch (err) {
+      toast.error('Failed to update status');
+    }
+  };
+  
+  // Render message text, replacing URLs with an "Open" button
+  const renderMessageWithLinks = (text) =>
+    text.split(/(https?:\/\/[^\s]+)/g).map((part, idx) =>
+      /https?:\/\//.test(part) ? (
+        <button
+          key={idx}
+          onClick={() => window.open(part, '_blank')}
+          className="inline-flex items-center px-1 py-0.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+        >
+          Open <ExternalLink className="w-4 h-4 ml-1" />
+        </button>
+      ) : (
+        <span key={idx}>{part}</span>
+      )
+    );
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      message: '',
+      image: '',
+      video: '',
+      status: 'disabled',
+      periodicity: 1,
+      duration: 0,
+    });
+  };
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Popup Banner</h2>
         <div className="space-x-2">
@@ -104,53 +176,69 @@ function BannerManager() {
           </button>
           <button
             onClick={() => {
-              setFormData({
-                title: '',
-                message: '',
-                image: '',
-                video: '',
-                status: 'disabled',
-                periodicity: 1,
-                duration: 0
-              });
+              resetForm();
               setShowForm(true);
             }}
             className="px-4 py-2 bg-indigo-600 text-white rounded-md"
           >
-            Add Banner
+            <Plus className="inline-block mr-1 h-4 w-4" />
+            Add
           </button>
         </div>
       </div>
 
-      {/* Banner List */}
+      {/* Banner List  */}
       <div className="space-y-4">
         {banners.map((banner) => (
           <div
             key={banner._id}
-            className="border rounded-lg p-4 flex justify-between items-center"
+            className="border rounded-lg p-4 flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4"
           >
-            <div>
-              <h3 className="font-medium">{banner.title || 'Untitled Banner'}</h3>
+            {/* Left: Banner Details */}
+            <div className="flex-1 space-y-1">
+              <h3 className="font-medium text-lg">{banner.title}</h3>
+              <p className="text-gray-700">{renderMessageWithLinks(banner.message)}</p>
+
+              {banner.image && (
+                <img
+                  src={banner.image}
+                  alt="Banner preview"
+                  className="mt-2 max-h-24 object-contain border rounded"
+                />
+              )}
+
+              {banner.video && (
+                <video
+                  src={banner.video}
+                  controls
+                  className="mt-2 max-h-24 object-contain border rounded"
+                />
+              )}
+
               <p className="text-sm text-gray-500">
-                Status: {banner.status}
-                {banner.periodicity > 1 && ` | Shows ${banner.periodicity} times`}
-                {banner.duration > 0 && ` | Duration: ${banner.duration}s`}
+                Status: {banner.status} &nbsp;|&nbsp;
+                Shows: {banner.periodicity} time{banner.periodicity > 1 ? 's' : ''} &nbsp;|&nbsp;
+                Duration: {banner.duration}s
               </p>
             </div>
+
             {isEditing ? (
-              <button
-                onClick={() => handleDelete(banner._id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleEdit(banner)}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  <Edit2 className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => handleDelete(banner._id)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
             ) : (
-              <button
-                onClick={() => handleEdit(banner)}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                <Edit2 className="h-5 w-5" />
-              </button>
+              <StatusToggle banner={banner} onToggle={handleToggleStatus} />
             )}
           </div>
         ))}
@@ -170,6 +258,7 @@ function BannerManager() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Title
@@ -178,12 +267,14 @@ function BannerManager() {
                   type="text"
                   value={formData.title}
                   onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
+                    setFormData(f => ({ ...f, title: e.target.value }))
                   }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                    focus:border-indigo-500 focus:ring-indigo-500"
                 />
               </div>
 
+              {/* Message */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Message
@@ -191,13 +282,15 @@ function BannerManager() {
                 <textarea
                   value={formData.message}
                   onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
+                    setFormData(f => ({ ...f, message: e.target.value }))
                   }
                   rows={3}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                    focus:border-indigo-500 focus:ring-indigo-500"
                 />
               </div>
 
+              {/* Image Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Image
@@ -209,14 +302,25 @@ function BannerManager() {
                   className="mt-1 block w-full"
                 />
                 {formData.image && (
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    className="mt-2 h-32 object-contain"
-                  />
+                  <div className="relative mt-2 h-32 w-full">
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="h-full object-contain"
+                    />
+                    <button
+                      onClick={() =>
+                        setFormData(f => ({ ...f, image: '' }))
+                      }
+                      className="absolute top-0 right-0 bg-black bg-opacity-50 text-white p-1 rounded-full"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
                 )}
               </div>
 
+              {/* Video Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Video
@@ -228,31 +332,26 @@ function BannerManager() {
                   className="mt-1 block w-full"
                 />
                 {formData.video && (
-                  <video
-                    src={formData.video}
-                    controls
-                    className="mt-2 h-32 object-contain"
-                  />
+                  <div className="relative mt-2 h-32 w-full">
+                    <video
+                      src={formData.video}
+                      controls
+                      className="h-full object-contain"
+                    />
+                    <button
+                      onClick={() =>
+                        setFormData(f => ({ ...f, video: '' }))
+                      }
+                      className="absolute top-0 right-0 bg-black bg-opacity-50 text-white p-1 rounded-full"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
                 )}
               </div>
 
+              {/* Settings */}
               <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Status
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) =>
-                      setFormData({ ...formData, status: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  >
-                    <option value="disabled">Disabled</option>
-                    <option value="enabled">Enabled</option>
-                  </select>
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Periodicity
@@ -262,15 +361,15 @@ function BannerManager() {
                     min="1"
                     value={formData.periodicity}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        periodicity: parseInt(e.target.value)
-                      })
+                      setFormData(f => ({
+                        ...f,
+                        periodicity: parseInt(e.target.value, 10),
+                      }))
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                      focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Duration (seconds)
@@ -280,16 +379,18 @@ function BannerManager() {
                     min="0"
                     value={formData.duration}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        duration: parseInt(e.target.value)
-                      })
+                      setFormData(f => ({
+                        ...f,
+                        duration: parseInt(e.target.value, 10),
+                      }))
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                      focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
+              {/* Form Actions */}
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
@@ -300,7 +401,12 @@ function BannerManager() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                  disabled={submitting}
+                  className={`px-4 py-2 rounded-md ${
+                    submitting
+                      ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
                 >
                   {formData._id ? 'Update' : 'Create'}
                 </button>
@@ -312,5 +418,3 @@ function BannerManager() {
     </div>
   );
 }
-
-export default BannerManager;
