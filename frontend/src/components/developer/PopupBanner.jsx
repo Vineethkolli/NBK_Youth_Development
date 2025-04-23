@@ -58,15 +58,6 @@ function PopupBanner() {
         </button>
 
         <div className="p-6">
-          {banner.title && (
-            <h2 className="text-2xl font-bold mb-4">{banner.title}</h2>
-          )}
-
-          {banner.message && (
-            <p className="text-gray-700 mb-4 whitespace-pre-wrap">
-              {banner.message}
-            </p>
-          )}
 
           {banner.image && (
             <img
@@ -84,6 +75,17 @@ function PopupBanner() {
               className="w-full h-auto rounded-lg"
             />
           )}
+
+{banner.title && (
+            <h2 className="text-2xl font-bold mb-4">{banner.title}</h2>
+          )}
+
+          {banner.message && (
+            <p className="text-gray-700 mb-4 whitespace-pre-wrap">
+              {banner.message}
+            </p>
+          )}
+
         </div>
       </div>
     </div>

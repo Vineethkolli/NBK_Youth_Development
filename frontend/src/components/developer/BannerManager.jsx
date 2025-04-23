@@ -92,7 +92,7 @@ function BannerManager() {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Banner Management</h2>
+        <h2 className="text-xl font-semibold">Popup Banner</h2>
         <div className="space-x-2">
           <button
             onClick={() => setIsEditing(!isEditing)}
