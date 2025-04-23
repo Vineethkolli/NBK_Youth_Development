@@ -3,6 +3,7 @@ import PaymentDetails from '../components/developer/PaymentDetails';
 import ClearData from '../components/developer/ClearData';
 import MaintenanceMode from '../components/developer/MaintenanceMode';
 import RoleStatistics from '../components/developer/Stats';
+import BannerManager from '../components/developer/BannerManager';
 
 function DeveloperOptions() {
   const { user } = useAuth();
@@ -15,6 +16,9 @@ function DeveloperOptions() {
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Maintenance Mode Section */}
       <MaintenanceMode />
+
+            {/* Banner Manager */}
+            <BannerManager />
 
       {/* Role Statistics */}
       <RoleStatistics />

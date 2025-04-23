@@ -29,7 +29,8 @@ import { LanguageProvider } from './context/LanguageContext';
 import { MaintenanceModeProvider, useMaintenanceMode } from './context/MaintenanceModeContext';
 import { MusicProvider } from './context/MusicContext';
 import MusicPlayer from './components/vibe/MusicPlayer';
-import TechStack from './pages/TechStack';
+import TechStack from './pages/TechStack'
+import PopupBanner from './components/developer/PopupBanner';
 
 function AppContent() {
   const { user } = useAuth();
@@ -41,6 +42,7 @@ function AppContent() {
   return (
     <>
       <Toaster position="top-right" />
+      <PopupBanner />
       <Routes>
         <Route element={<AuthLayout />}>
           <Route path="/signin" element={<SignIn />} />
