@@ -72,7 +72,6 @@ function AppContent() {
 }
 
 function App() {
-  // Listen for the new service worker taking control
   useEffect(() => {
     if (navigator.serviceWorker) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {

@@ -59,14 +59,12 @@ function MusicPlayer() {
 
   return (
     <div className="fixed top-20 inset-x-0 bg-white border-t shadow-lg z-0">
-      <div className="max-w-screen-xl mx-auto grid grid-cols-3 items-center p-2
-                      sm:grid-cols-2 sm:gap-2">
-        {/* Song Title */}
+      <div className="max-w-screen-xl mx-auto grid grid-cols-3 items-center p-2 sm:grid-cols-2 sm:gap-2">
+
         <div className="col-span-1 sm:col-span-2">
           <h3 className="font-medium truncate">{currentSong.name}</h3>
         </div>
 
-        {/* Controls + Progress */}
         <div className="col-span-2 sm:col-span-2 flex flex-col items-center space-y-2">
           <div className="flex items-center space-x-4">
             <button
@@ -107,7 +105,6 @@ function MusicPlayer() {
           </div>
         </div>
 
-        {/* Close Button: now pauses before closing */}
         <button
           onClick={() => {
             audioRef.current.pause();      
